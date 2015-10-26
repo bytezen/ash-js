@@ -16,7 +16,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,8 @@
   "homepage": "https://github.com/bytezen/ash-js",
   "dependencies": {
     "chai": "^3.4.0",
-    "mocha": "^2.3.3"
+    "mocha": "^2.3.3",
+    "signals": "^1.0.0",
+    "stampit": "^2.1.1"
   }
 }
