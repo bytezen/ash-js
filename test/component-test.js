@@ -22,27 +22,27 @@ describe('# Component Test', function() {
   describe('## has component type', function() {
 
 
-
     it('has a component type',function(){
       var MockComp = Component(null,'MockType');
-      should.exist(MockComp);
+      should.exist(MockComp)
+      MockComp.should.have.property('type')
     });
 
     it('has expected type',function(){
       var MockComp = Component(null,'MockType');
-      MockComp.componentType().should.equal('MockType')
+      MockComp.type.should.equal('MockType')
     });
 
     it('has matching types', function() {
       var MockComp = Component(null,'MockType');
       var Mock2 = Component(null, 'MockType');
-      MockComp.componentType().should.equal(Mock2.componentType());
+      MockComp.type.should.equal(Mock2.type);
     });
 
     it('has different types', function() {
       var MockComp = Component(null,'MockType');
       var Mock2 = Component(null, 'MockTypeDifferent');
-      MockComp.componentType().should.not.equal(Mock2.componentType());
+      MockComp.type.should.not.equal(Mock2.type);
     });
 
   });

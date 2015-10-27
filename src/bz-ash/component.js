@@ -8,9 +8,9 @@ const Component = stampit()
       const componentType = params.args[0]
 
       //get the component Type
-      params.instance.componentType = function() {
+      params.instance.type = (function() {
         return componentType;
-      }
+      })()
     })
 
 
