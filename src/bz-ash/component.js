@@ -1,38 +1,62 @@
 const stampit = require('stampit')
 
 
-
+/*
 const Component = stampit()
   .init( function(params){       // obj is {instance stamp args } from documentation
       // private componentType
-      const componentType = params.args[0]
-
+      //const componentType = params.args[0]
+    this.type = Component.type || {id:'Default Component'}
       //get the component Type
-      params.instance.type = (function() {
-        return componentType;
-      })()
+//      params.instance.type = (function() {
+        //return componentType;
+//        return Component.type;
+
+//      })()
+
     })
+  .static({
+    makePrototype : function(type) { this.type = {id: type}; return this; }
+  })
+*/
 
 
+function makeStamp(componentId) {
+  var type = { id: componentId };
+
+  const stamp = stampit()
+  .init( function() {
+      Object.defineProperty(this, "type", {
+        get: function() {return type; }
+      })
+
+      Object.defineProperty(this, "id", {
+        get: function() {return type.id; }
+      })
+    })
+  .props( {
+    label : componentId
+  })
+
+  return stamp;
+}
 
 
-module.exports = Component
+module.exports = makeStamp
 
 // ---- quik test
 /*
-var myComp = Component({bar:'baz'},'Point2D')
-console.log(myComp.componentType())
-console.log(myComp.bar)
+var chai = require('chai'),
+    expect = chai.expect
 
+describe('#Testing component composition',function(){
 
-var comp2 = Component(null,'Point3D')
-console.log(comp2.componentType())
+  it('## should create composed object with proper type', function() {
+    var Point2D = makeStamp('POINT2D')
+    var myPt = Point2D.create({x: 100, y: 200});
+    expect(myPt.componentType()).to.equal(Point2D.componentPrototype())
+    console.log(myPt.x + myPt.componentId() )
 
-console.log(comp2.componentType() === myComp.componentType())
-
-
-var comp3 = Component(null,'Point2D')
-console.log(comp3.componentType())
-
-console.log(comp3.componentType() === myComp.componentType())
+  });
+})
 */

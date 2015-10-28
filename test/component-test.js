@@ -2,16 +2,58 @@ var chai = require('chai')
   , expect = chai.expect
   , should = chai.should()
 
-var Component = require('../src/bz-ash/component')
+var ComponentFactory = require('../src/bz-ash/component')
 
 
 describe('# Component Test', function() {
+
   describe('## create', function() {
+    var MockFactory, MockComponent
 
-    var MockComp = Component();
+    before('create mocks', function() {
+      MockFactory = ComponentFactory('MOCK');
+      mockcomponent = MockFactory.create({foo: 1, bar: 'ten', baz: {foo : false} })
 
-    it('be able to create a component',function(){
-      should.exist(MockComp);
+    });
+
+
+    it('can create a factory', function() {
+      should.exist(MockFactory);
+    });
+
+    it('can create a component',function(){
+      expect(mockcomponent).to.exist;
+    });
+
+    it('has the correct type',function() {
+//      expect(mockcomponent.type).to.equal(MockFactory.componentPrototype())
+      expect(mockcomponent.id).to.equal('MOCK')
+      expect(mockcomponent).to.have.property("type")
+    });
+
+    it('can create properties',function() {
+      ['foo','bar','baz'].forEach( function(prop) {
+        expect(mockcomponent).to.have.property(prop)
+      });
+      expect(mockcomponent.baz).to.have.property('foo')
+    });
+
+    it('can read properties',function() {
+      expect(mockcomponent.foo).to.equal(1)
+      expect(mockcomponent.bar).to.equal('ten')
+      expect(mockcomponent.baz.foo).to.be.false
+    });
+
+    it('can write and read new values',function() {
+      mockcomponent.foo++
+      mockcomponent.bar += "ten"
+      mockcomponent.baz.foo = true
+
+      expect(mockcomponent.foo).to.equal(2)
+      expect(mockcomponent.bar).to.equal('tenten')
+      expect(mockcomponent.baz.foo).to.be.true
+
+
     });
 
   });
@@ -19,63 +61,23 @@ describe('# Component Test', function() {
 
   //-----------
 
-  describe('## has component type', function() {
+  describe('## independent Components', function() {
 
-
-    it('has a component type',function(){
-      var MockComp = Component(null,'MockType');
-      should.exist(MockComp)
-      MockComp.should.have.property('type')
-    });
-
-    it('has expected type',function(){
-      var MockComp = Component(null,'MockType');
-      MockComp.type.should.equal('MockType')
-    });
-
-    it('has matching types', function() {
-      var MockComp = Component(null,'MockType');
-      var Mock2 = Component(null, 'MockType');
-      MockComp.type.should.equal(Mock2.type);
-    });
 
     it('has different types', function() {
-      var MockComp = Component(null,'MockType');
-      var Mock2 = Component(null, 'MockTypeDifferent');
-      MockComp.type.should.not.equal(Mock2.type);
+      var MockComp = ComponentFactory('MOCK');
+      var MockComp2 = ComponentFactory('MOCK');
+
+      var props = { foo:'foo', bar:'bar'}
+      var comp1 = MockComp.create(props)
+      var comp2 = MockComp2.create(Object.create(props))
+
+      expect(comp1.type).not.equal(comp2.type);
     });
 
   });
 
 
   //-----------
-
-  describe('## can create with properties', function() {
-    it('has primitive properties', function() {
-      var MockComp = Component({
-                                foo: 2,
-                                bar : 3,
-                                baz : {foobar : -10 }
-                                },
-                                'MockType');
-
-      MockComp.should.have.property('foo').equal(2)
-      MockComp.should.have.property('bar').equal(3)
-    });
-
-    it('has object properties', function() {
-      var MockComp = Component({
-                                foo: 2,
-                                bar : 3,
-                                baz : {foobar : -10 }
-                                },
-                                'MockType');
-
-      MockComp.should.have.property('baz')
-      MockComp.baz.should.have.property('foobar').equal(-10)
-
-    });
-
-  });
 
 });

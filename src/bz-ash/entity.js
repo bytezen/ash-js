@@ -6,6 +6,7 @@ const Signal = require('signals')
 //var added = new Signal(), removed = new Signal()
 
 var Entity = stampit({
+  //TODO: Protect Components
   props: {
     previous :   Object.create(null),
     next     :   Object.create(null),
@@ -17,16 +18,20 @@ var Entity = stampit({
 
     add : function addComponent(comp) {
             if(this.components.indexOf(comp) === -1) {
-              this.log('adding component ... ' + comp.type)
               this.components.push(comp)
               this.componentAdded.dispatch(comp)
+
+              return this
+            } else {
+              //throw Error("Component, " + comp.id + " already exists on this entity")
             }
-            return this
+
     },
 
     remove: function removeComponent(comp) {
             var index = this.components.indexOf(comp)
             if( index !== -1 ) {
+              this.log("removing component : " + comp.id );
               this.components.splice(index,1)
               this.componentRemoved.dispatch(comp)
             }
@@ -59,14 +64,16 @@ var Entity = stampit({
 
   },
 
-  refs : {
+/*  refs : {
     componentAdded    :   added,
     componentRemoved  :   removed
   },
+*/
 
   init : function() {
     this.componentAdded = new Signal()
     this.componentRemoved = new Signal()
+
   }
 })
 

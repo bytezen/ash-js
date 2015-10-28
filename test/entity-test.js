@@ -6,7 +6,6 @@ const Signal = require('signals')
 
 
 
-
 describe('# Entity', function() {
   var E = require('../src/bz-ash/entity')
   var Component = require('../src/bz-ash/component')
@@ -51,16 +50,15 @@ describe('# Entity', function() {
 
   //-----------
 
-  describe('## add / remove components', function() {
+  describe('## add / remove components:', function() {
 
     before('create mock components',function() {
-
-      mockComponent1 = Component({},'Mock1')
-      mockComponent2 = Component({},'Mock2')
-      mockComponent3 = Component({},'Mock3')
-      mockComponent4 = Component({},'Mock4')
-      mockComponent5 = Component({},'Mock5')
-      mockComponent6 = Component({},'Mock6')
+      mockComponent1 = Component('Mock1').create()
+      mockComponent2 = Component('Mock2').create()
+      mockComponent3 = Component('Mock3').create()
+      mockComponent4 = Component('Mock4').create()
+      mockComponent5 = Component('Mock5').create()
+      mockComponent6 = Component('Mock6').create()
     });
 
 
@@ -104,7 +102,7 @@ describe('# Entity', function() {
       function onAddComponent(c) {
         handlerCount++;
 
-        ['Mock4','Mock5','Mock6'].should.include(c.type);
+        ['Mock4','Mock5','Mock6'].should.include(c.id);
 
         if(handlerCount == 2 ) {
           mockEntity.componentAdded.remove(onAddComponent)
@@ -116,22 +114,30 @@ describe('# Entity', function() {
     });
 
     it('should not add duplicates', function() {
+      var len = mockEntity.components.length
+
       mockEntity.add(mockComponent1)
-                .add(mockComponent2)
-                .add(mockComponent3)
+      mockEntity.add(mockComponent2)
+      mockEntity.add(mockComponent3)
 
-      mockEntity.components.length.should.equal(6)
-
+      mockEntity.components.length.should.equal(len)
 
     });
 
 
    it('can remove 2 components',function(){
+
+      console.log( "---. " +mockEntity.components.indexOf(mockComponent1))
+      console.log(mockComponent1)
       mockEntity.remove(mockComponent1)
+      console.log( "---. " +mockEntity.components.indexOf(mockComponent1))
+
+      var len = mockEntity.components.length
       mockEntity.components.should.not.include(mockComponent1)
-      mockEntity.components.length.should.equal(5)
+      mockEntity.components.length.should.equal(len)
 
       mockEntity.remove(mockComponent6)
+      len = mockEntity.components.length
 
       mockEntity.components.should.include(mockComponent2)
       mockEntity.components.should.include(mockComponent3)
@@ -139,7 +145,7 @@ describe('# Entity', function() {
       mockEntity.components.should.include(mockComponent5)
       mockEntity.components.should.not.include(mockComponent6)
 
-      mockEntity.components.length.should.equal(4)
+      mockEntity.components.length.should.equal(len)
     });
 
     it('remove 2 components with chaining', function() {
@@ -162,7 +168,7 @@ describe('# Entity', function() {
       function onDeleteComponent(c) {
         handleCount++
 
-        ['Mock2','Mock4'].should.include(c.type)
+        [mockComponent2,mockComponent4].should.include(c)
 
         if(handleCount == 2) {
           mockEntity.components.length.should.equal(0)
@@ -177,14 +183,13 @@ describe('# Entity', function() {
 
   describe('## Access entity component properties',function() {
     before('add components to entity', function() {
-      mockComponent1 = Component( {foo: 1,
+      mockComponent1 = Component('mock1').create( {foo: 1,
                                    bar: 'xyz',
                                    baz: false,
                                    boo: [1,2,3]
-                                  },
-                                 'mock1')
+                                  })
 
-      mockComponent2 = Component( {baz : { foo: 3, bar : true } }, 'mock2' )
+      mockComponent2 = Component('mock2').create( {baz : { foo: 3, bar : true } })
 
       mockEntity.add(mockComponent1).add(mockComponent2)
 
