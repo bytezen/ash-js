@@ -1,57 +1,58 @@
-var chai = require('chai')
-  , expect = chai.expect
-  , should = chai.should()
+var chai = require('chai'),
+    expect = chai.expect,
+    stampit = require('stampit')
+  
 
-var ComponentFactory = require('../src/bz-ash/component')
+var FooFactory = require('./data/FooComponentFactory'),
+    BarFactory = require('./data/BarComponentFactory')
 
 
 describe('# Component Test', function() {
 
   describe('## create', function() {
-    var MockFactory, MockComponent
+    it('can create a component with default name', function() {
+      var mockcomponent = FooFactory.create()
 
-    before('create mocks', function() {
-      MockFactory = ComponentFactory('MOCK');
-      mockcomponent = MockFactory.create({foo: 1, bar: 'ten', baz: {foo : false} })
-
+      expect(mockcomponent).to.exist
+      expect(mockcomponent.type).to.exist
+      expect(mockcomponent.type.name).to.equal('FooComponent')
     });
 
-
-    it('can create a factory', function() {
-      should.exist(MockFactory);
-    });
-
-    it('can create a component',function(){
-      expect(mockcomponent).to.exist;
+    it('can create a name using fluent style',function(){
+      mockcomponent = FooFactory.create()
+      expect(mockcomponent.type.name).to.equal('FooComponent');
     });
 
     it('has the correct type',function() {
-//      expect(mockcomponent.type).to.equal(MockFactory.componentPrototype())
-      expect(mockcomponent.id).to.equal('MOCK')
-      expect(mockcomponent).to.have.property("type")
+      var mockcomponent =  FooFactory.create()
+
+      expect(mockcomponent.type).to.equal(FooFactory.type)
+      
     });
 
-    it('can create properties',function() {
-      ['foo','bar','baz'].forEach( function(prop) {
-        expect(mockcomponent).to.have.property(prop)
+    it('can create and read properties',function() {
+      var mockcomponent =  FooFactory.create({x:'foo', y: 'bar'});      
+
+      ['x','y'].forEach( function(prop) {
+        expect(mockcomponent).to.have.property(prop)        
       });
-      expect(mockcomponent.baz).to.have.property('foo')
-    });
 
-    it('can read properties',function() {
-      expect(mockcomponent.foo).to.equal(1)
-      expect(mockcomponent.bar).to.equal('ten')
-      expect(mockcomponent.baz.foo).to.be.false
+      expect(mockcomponent.x).to.equal('foo')
+      expect(mockcomponent.y).to.equal('bar')
+
     });
 
     it('can write and read new values',function() {
-      mockcomponent.foo++
-      mockcomponent.bar += "ten"
-      mockcomponent.baz.foo = true
+      var mockcomponent =  FooFactory.create({x:'foo', y: 'bar'});      
 
-      expect(mockcomponent.foo).to.equal(2)
-      expect(mockcomponent.bar).to.equal('tenten')
-      expect(mockcomponent.baz.foo).to.be.true
+      mockcomponent.x = 10
+      mockcomponent.y = "foobar"
+      mockcomponent.z = true
+
+
+      expect(mockcomponent.x).to.equal(10)
+      expect(mockcomponent.y).to.equal('foobar')
+      expect(mockcomponent.z).to.be.true
 
 
     });
@@ -61,19 +62,25 @@ describe('# Component Test', function() {
 
   //-----------
 
-  describe('## independent Components', function() {
+  describe('## Component Types', function() {
 
+    it('components from the same factory have the same type',function() {
+      var mockcomponent = FooFactory.create()
+          mockcomponent2 = FooFactory.create({x:1, y:'bar'})
 
-    it('has different types', function() {
-      var MockComp = ComponentFactory('MOCK');
-      var MockComp2 = ComponentFactory('MOCK');
-
-      var props = { foo:'foo', bar:'bar'}
-      var comp1 = MockComp.create(props)
-      var comp2 = MockComp2.create(Object.create(props))
-
-      expect(comp1.type).not.equal(comp2.type);
+      expect(mockcomponent.type).to.equal(FooFactory.type)
+      expect(mockcomponent.type).to.equal(mockcomponent2.type)
+      
     });
+
+
+    it('components from different factories have different type', function(){
+      var mock1 = FooFactory.create(),
+          mock2 = BarFactory.create()
+          
+          expect(mock1.type).to.not.equal(mock2.type)
+
+    })
 
   });
 
