@@ -8,21 +8,26 @@ var stampit = require('stampit'),
 describe('# Node Test',function(){
 	var mockNode
 
-	it('can construct default node',function(){
+	it('can create a default node with default name',function(){
 		var node = NodeFactory().create()
 		expect(node).to.exist
+		expect(node.type).to.exist
+		expect(node.type.name).to.equal('AnonymousNodeFactory')
 	})
 
-	it('default nodes should not have the same type',function() {
-		var mock1 = NodeFactory().create(),
-			mock2 = NodeFactory().create()
-
-			expect(mock1.type).to.not.equal(mock2.type)
-
-
+	it('can create a node with family using fluent style',function(){		
+		mockNode = NodeFactory.withName('lymphNode').create()
+		mockNode2 = NodeFactory.withName('soreNode').create()
+		expect(mockNode.type.name).to.equal('lymphNode')
 	})
 
-	it('can create a node',function(){		
+	it('can create a node with componentTypes using fluent style',function(){		
+
+		mockNode = NodeFactory.withComponentTypes.create()
+		expect(mockNode.type.name).to.equal('lymphNode')
+	})
+
+	it('can create a node with componentTypes',function(){		
 		var PointComponentPrototype = stampit().compose( 
 												ComponentFactory({typeName: 'point'},
 												stampit().props({ x: 0, y: 0, z: 0})))
@@ -36,6 +41,16 @@ describe('# Node Test',function(){
 		 expect(PointComponentPrototype.type).to.equal(point.type)
 		 expect(pointNode.componentTypes).to.have.length(1)
 		 expect(pointNode.hasComponentType(point.type)).to.be.true		 
+
+	})
+
+
+	it('default nodes should not have the same type',function() {
+		var mock1 = NodeFactory().create(),
+			mock2 = NodeFactory().create()
+
+			expect(mock1.type).to.not.equal(mock2.type)
+
 
 	})
 
