@@ -1,21 +1,20 @@
 var stampit = require('stampit'),	
-	DEFAULT_TYPE = "anonymousComponentType"
+	DEFAULT_TYPE_NAME = "anonymousComponentType"
 
 
 
-module.exports = function(config) {
+module.exports = function () {
+					var prototypeType = { name: DEFAULT_TYPE_NAME }
+					return stampit()
+		            		.refs({
+		            			type: prototypeType           			            	
+		            		})
+							.static({
+								type: prototypeType,
+					            withName: function withName(name) {     
+		                              prototypeType.name = name               
+		                              return this
+		                          }           
+							})
+			}
 
-
-	var typeName = config ? (config.typeName || DEFAULT_TYPE) : DEFAULT_TYPE,
-		prototypeType = { name: typeName },
-		res= stampit()
-            .refs({
-            	type: prototypeType           	
-            	
-            })
-			.static({
-				type: prototypeType				
-			})
-
-	return res;
-}
