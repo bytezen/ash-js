@@ -1,5 +1,6 @@
-const stampit = require('stampit')
-const Signal = require('signals')
+var stampit = require('stampit'),
+    Signal = require('signals'),
+    Dictionary = require('../bzutil/dictionary')
 
 
 
@@ -8,18 +9,17 @@ const Signal = require('signals')
 var Entity = stampit({
   //TODO: Protect Components
   props: {
-    previous :   Object.create(null),
-    next     :   Object.create(null),
-    components : []
+    previous :   null, //entity
+    next     :   null //entity
   },
 
   methods : {
     log : console.log,
 
-    add : function addComponent(comp) {
-            if(this.components.indexOf(comp) === -1) {
-              this.components.push(comp)
-              this.componentAdded.dispatch(comp)
+    add : function addComponent(component) {
+            if( !this.components.has(component) ) {
+              this.components.add(component.type, component)
+              this.componentAdded.dispatch(component)
 
               return this
             } else {
@@ -28,52 +28,38 @@ var Entity = stampit({
 
     },
 
-    remove: function removeComponent(comp) {
-            var index = this.components.indexOf(comp)
-            if( index !== -1 ) {
-              this.log("removing component : " + comp.id );
-              this.components.splice(index,1)
-              this.componentRemoved.dispatch(comp)
+    remove: function removeComponent(component) {            
+            if( this.components.has(component.type) ) {              
+              this.components.remove(component.type)
+              this.componentRemoved.dispatch(component)
             }
             return this
     },
 
     // return a component of the specified type if it exists
     // or null
-    get : function get(type) {
-      if(this.has(type)) {
-        var res = this.components.filter(
-          function filterType(c) {
-              return isType(c,type)
-          });
-
-        if(res.length > 0) {
-          return res[0];
-        } else {
-          return null;
-        }
+    get : function getComponent(componentType) {
+      if(this.components.has(componentType)) {
+        return this.components.get(componentType)
       }
+
+      return null
     },
 
-    has : function has(type) {
-      return this.components.some(
-        function someType(c) {
-          return isType(c,type)
-        });
+    has : function has(componentType) {
+      return this.components.has(componentType)
+    },
+
+    componentCount : function componentCount() {
+      return this.components.size()
     }
 
   },
 
-/*  refs : {
-    componentAdded    :   added,
-    componentRemoved  :   removed
-  },
-*/
-
   init : function() {
     this.componentAdded = new Signal()
     this.componentRemoved = new Signal()
-
+    this.components = Dictionary.create()
   }
 })
 
