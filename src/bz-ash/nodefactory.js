@@ -7,7 +7,7 @@ var testtriggertest = ""
 
 module.exports = function() {
   var prototypeType = { name: DEFAULT_TYPE_NAME,
-                      componentTypes: {} }  
+                      componentTypes: {} }  // object key, val pairs :: (componentTypeName, componentType)
 
   return stampit()
             .refs({
@@ -60,13 +60,13 @@ module.exports = function() {
               var instance = params.instance,
                   types = instance.type.componentTypes
               
-              for(var i in types) {
-                if(types.hasOwnProperty(i)) {
-                  for(var j in types[i]) {
+              for(var compName in types) {
+                if(types.hasOwnProperty(compName)) {
+                  for(var prop in types[compName]) {
                     // the "type" property is a prototype level property that
                     // we don't need to copy to the node
-                    if( types[i].hasOwnProperty(j) && j !== "type") {
-                           instance[j] = types[i][j]
+                    if( types[compName].hasOwnProperty(prop) && prop !== "type") {
+                           instance[prop] = types[compName][prop]
                     }
                   }
                 }
