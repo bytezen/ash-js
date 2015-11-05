@@ -15,8 +15,8 @@ module.exports = function() {
               componentTypes: prototypeType.componentTypes             
             })
             .props({
-                previous: undefined,
-                next: undefined,
+                previous: null,
+                next: null,
                 entity: {}                    
             })
             .static({
