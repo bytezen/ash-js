@@ -60,13 +60,17 @@ module.exports = function() {
               var instance = params.instance,
                   types = instance.type.componentTypes
               
-              for(var compName in types) {
+              for(var compName in types) {            //get the components on this node
                 if(types.hasOwnProperty(compName)) {
-                  for(var prop in types[compName]) {
+                  for(var componentProp in types[compName]) { //get the properties of this component
                     // the "type" property is a prototype level property that
                     // we don't need to copy to the node
-                    if( types[compName].hasOwnProperty(prop) && prop !== "type") {
-                           instance[prop] = types[compName][prop]
+                    if( types[compName].hasOwnProperty(componentProp) && componentProp !== "type") {
+                        if( instance.hasOwnProperty(componentProp)) {
+                          console.warn("overwriting component property: " + componentProp + " on node " + this.type.name)
+                        } else {
+                           instance[componentProp] = types[compName][componentProp]   //set a property on the node equal to value of the component's prop
+                        }
                     }
                   }
                 }
