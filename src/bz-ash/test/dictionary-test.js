@@ -1,4 +1,4 @@
-var DictionaryPrototype = require('../src/bzutil/dictionary'),
+var DictionaryPrototype = require('../../bzutil/dictionary'),
 	expect = require('chai').expect
 
 describe('# Dictionary', function() {
@@ -95,7 +95,23 @@ describe('# Dictionary', function() {
 			webster.add(key1,obj)
 			webster.add('2','test')
 			expect(webster.get('2')).to.equal('test')
-		}) 		
+		})
+
+		it('# forEach iterates over every pair in the dictionary',function(){
+			var keys = [], values = []
+			webster.forEach( function(k,v) {
+				keys.push(k)
+				values.push(v)
+			})
+
+			webster.keys.forEach(function(k){
+				expect(keys).to.contain(k)
+			})
+
+			webster.values.forEach(function(v){
+				expect(values).to.contain(v)
+			})			
+		})  		
 	})
 
 /*	
