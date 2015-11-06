@@ -82,14 +82,19 @@ describe('# Node Test',function(){
 	})
 
 	it('node inherits properties from components', function() {
-		var CompPrototype1 = ComponentFactory().props({foo: 'foo', bar:'bar', baz : {foo:'foobarbaz'}}).withName('fooComponent'),
+		var CompPrototype1 = ComponentFactory()
+								.props({foo: 'foo', bar:'bar', baz : {foo:'foobarbaz'}})
+								.withName('fooComponent'),
 			component1 = CompPrototype1.create(),
 			node = NodeFactory().withName('FooNode').withComponents(component1).create()
 
-			expect(node).to.have.property('foo')
-			expect(node).to.have.property('bar')
-			expect(node.foo).to.equal(component1.foo)
-			expect(node.bar).to.equal(component1.bar)
+			expect(node).to.have.property(component1.type)
+			expect( node[component1.type] ).to.have.property('foo')
+			expect( node[component1.type] ).to.have.property('bar')
+			expect( node[component1.type] ).to.have.property('baz')			
+			expect( node[component1.type].foo ).to.equal('foo')
+			expect( node[component1.type].bar ).to.equal('bar')
+			expect( node[component1.type].baz.foo ).to.equal('foobarbaz')
 
 	})
 
