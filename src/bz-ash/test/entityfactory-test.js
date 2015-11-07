@@ -1,5 +1,6 @@
 var expect = require('chai').expect,
-  EntityPrototype = require('../entity'),
+  EntityFactory = require('../entityfactory'),
+  EntityPrototype = EntityFactory(),
   ComponentFactory = require('../componentfactory'),
   Signal = require('signals')
 
@@ -18,11 +19,27 @@ describe('# Entity', function() {
   
   it('be able to create entity', function() {      
       expect(mockEntity).to.exist
-      expect(mockEntity).to.have.property('components')  
+      expect(mockEntity).to.have.property('componentMap')  
       expect(mockEntity).to.have.property('next')
       expect(mockEntity).to.have.property('previous')
   });
 
+  it('be able to create withComponents', function() {
+      var Mock1ComponentFactory = ComponentFactory().withName('mock1component')
+      var Mock2ComponentFactory = ComponentFactory().withName('mock2component')
+
+      var mock1component = Mock1ComponentFactory.create()
+      var mock2component = Mock2ComponentFactory.create()
+
+      var MockEntityPrototype = EntityFactory().withComponents([mock1component, mock2component])
+      var entity = MockEntityPrototype.create()
+
+      expect(entity.componentMap.size()).to.be.equal(2)
+      expect(entity.has( Mock1ComponentFactory.type ) ).to.be.true
+      expect(entity.has( Mock2ComponentFactory.type ) ).to.be.true
+      expect(entity.get( Mock1ComponentFactory.type ) ).to.be.equal(mock1component)
+      expect(entity.get( Mock2ComponentFactory.type ) ).to.be.equal(mock2component)
+  })
 
   //-----------
 
@@ -45,7 +62,7 @@ describe('# Entity', function() {
 
       mockEntity.add(mockcomponents[0])
       expect(mockEntity.has(mockfactories[0].type)).to.be.true
-      expect(mockEntity.components.size()).to.be.equal(1)
+      expect(mockEntity.componentMap.size()).to.be.equal(1)
     });
 
 
@@ -54,7 +71,7 @@ describe('# Entity', function() {
       mockEntity.add(mockcomponents[1])
                 .add(mockcomponents[2])
 
-      expect(mockEntity.components.size()).to.be.equal(2)
+      expect(mockEntity.componentMap.size()).to.be.equal(2)
       expect(mockEntity.has(mockfactories[1].type)).to.be.true
       expect(mockEntity.has(mockfactories[2].type)).to.be.true
       expect(mockEntity.has(mockfactories[3].type)).to.be.false
