@@ -34,7 +34,7 @@ module.exports = function() {
             remove: function removeComponent(component) {            
                     if( this.componentMap.has(component.type) ) {              
                       this.componentMap.remove(component.type)
-                      this.componentRemoved.dispatch(component)
+                      this.componentRemoved.dispatch(this, component.type)
                     }
                     return this
             },

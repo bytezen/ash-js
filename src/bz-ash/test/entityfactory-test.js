@@ -170,10 +170,11 @@ describe('# Entity', function() {
 
 
       // handler callback
-      function onDeleteComponent(c) {
+      function onDeleteComponent(entity,componentType) {
         handleCount++
 
-        expect([mockfactories[0],mockfactories[4]]).to.contain(c)
+        expect([mockfactories[0].type,mockfactories[4].type]).to.contain(componentType)
+        expect(mockEntity).to.equal(entity)
 
         if(handleCount == 2) {
           expect(mockEntity.componentCount()).to.equal(len - 2)

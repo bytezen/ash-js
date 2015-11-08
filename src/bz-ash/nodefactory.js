@@ -6,13 +6,13 @@ var testtriggertest = ""
 
 
 module.exports = function() {
-  var prototypeType = { name: DEFAULT_TYPE_NAME,
-                      componentTypes: {} }  // object key, val pairs :: (componentTypeName: componentType)
+  var config = { name: DEFAULT_TYPE_NAME,
+                      componentTypes: []} //{} }  // object key, val pairs :: (componentTypeName: componentType)
 
   return stampit()
             .refs({
-              type: prototypeType,
-              componentTypes: prototypeType.componentTypes  // same as prototype.componentTypes (componentTypeName, componentObj)           
+              type: config,
+              componentTypes: []
             })            
             .props({
                 previous: null,
@@ -20,9 +20,12 @@ module.exports = function() {
                 entity: {}                    
             })
             .static({
-              type: prototypeType,
+              //TODO: Use config pattern here, but remember we need to have closure over the config
+              //type
+              type: config,
+              components: [],
               withName: function withName(name) {     
-                                prototypeType.name = name               
+                                config.name = name               
                                 return this
                             },
               withComponents: function withComponents(components) {
@@ -30,43 +33,47 @@ module.exports = function() {
                                 if( Array.isArray(components) ) {
                                   args = components
                                   // components.forEach( function forEachNodeType(t){ 
-                                  //                   prototypeType.componentcomponents.push(t)
+                                  //                   config.componentcomponents.push(t)
                                   //               })
                                 } else if(arguments.length > 1) {
                                   args = [].slice.call(arguments)
                                   // args.forEach( function forEachArgs(a){
-                                  //                   prototypeType.componentcomponents.push(a)
+                                  //                   config.componentcomponents.push(a)
                                   //               })
                                 } else  if(arguments.length == 1){                                  
                                   args.push(components)
                                 }
 
                                 //register each component name and type with this node
+                                //TODO: Refactor to   Use the pattern from Entity
                                 args.forEach(function argsForEach(a) {
-                                  this.type.componentTypes[a.type.name] = a 
+                                  config.componentTypes.push(a.type)
+                                  this.components.push(a)
                                 }, this)
 
 
                               return this
-                            }            
+                            }                
             })
             .methods({
               hasComponentName: function hasComponentName(name) {
-                return this.type.componentTypes.hasOwnProperty(name)
+                return this.type.components.hasOwnProperty(name)
               }
             })
             .init( function(params){
               // copy the component
               var instance = params.instance,
-                  types = instance.type.componentTypes
-              
-              for(var compName in types) {            //get the components on this node
-                if(types.hasOwnProperty(compName)) {
-                  for(var componentProp in types[compName]) { //get the properties of this component
-                    instance[types[compName]] = types[compName] 
-                  }
-                }
-              }
+                  comp
+                  //types = instance.type.components  //(componentTypeName, componentType)
+                
+              this.componentTypes = params.stamp.componentTypes
+              this.componentTypes.forEach(function (type) {
+                                //this.components = params.stamp.type.components
+                                comp = params.stamp.
+                                this[type] = 
+                                instance[type] = c
+                              },this)
+
             })
             // !!!!!!Test this!!!!!!
                     // the "type" property is a prototype level property that
