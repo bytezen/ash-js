@@ -1,7 +1,6 @@
-var stampit = require('stampit'),
-	expect = require('chai').expect,
-	NodeFactory = require('../nodefactory')
-	EntityPrototype = require('../entity')
+var expect = require('chai').expect,
+	NodeFactory = require('../nodefactory'),
+	EntityPrototype = require('../entityfactory')(),
 	ComponentFactory = require('../componentfactory')
 
 
@@ -24,78 +23,13 @@ describe('# Node Test',function(){
 	})	
 
 	it('can create a node with family using fluent style',function(){		
-		mockNode = NodeFactory().withName('lymphNode').create()
-		mockNode2 = NodeFactory().withName('soreNode').create()
+		var ComponentPrototype = ComponentFactory().withName('Comp1').props({foo: 'foo'})
+			mockcomponent = ComponentPrototype.create()
+
+		mockNode = NodeFactory().withName('lymphNode').withComponentTypes(mockcomponent.type).create()		
+
 		expect(mockNode.type.name).to.equal('lymphNode')
-	})
-
-	it('can create a node with single component type using fluent style',function(){		
-		var MockComponentPrototype = ComponentFactory(),
-			mockcomponent = MockComponentPrototype.withName('comp1').create(),
-			mockNode = NodeFactory().withComponents(mockcomponent).create()
-			
-		expect(mockNode.componentTypes).to.have.property(MockComponentPrototype.type.name)
-		expect(mockNode.hasComponentName(MockComponentPrototype.type.name))
-	})
-
-	it('can create a named node with a component using fluent style', function() {
-		var MockComponentPrototype = ComponentFactory(),	
-			mockcomponent = MockComponentPrototype.withName('comp1').create(),
-			mockNode = NodeFactory().withComponents(mockcomponent)
-							.withName('Comp1Node')
-							.create()
-
-		expect(mockNode.type.name).to.equal('Comp1Node')	
-		expect(mockNode.componentTypes).to.have.property(MockComponentPrototype.type.name)
-		expect(mockNode.hasComponentName(MockComponentPrototype.type.name))
-	})
-
-	it('can create a node with multiple component types using fluent style',function(){
-		var comp1 = ComponentFactory().withName('mockcomp1').create(),
-			comp2 = ComponentFactory().withName('mockcomp2').create(),
-			comp3 = ComponentFactory().withName('mockcomp3').create()
-			mocknode = NodeFactory().withComponents(comp1,comp2,comp3).create()
-
-			expect(mocknode.componentTypes[comp1.type.name]).to.be.ok;
-			expect(mocknode.componentTypes[comp2.type.name]).to.be.ok;
-			expect(mocknode.componentTypes[comp3.type.name]).to.be.ok;
-
-			expect(mocknode.componentTypes[comp1.type.name]).to.equal(comp1)		
-			expect(mocknode.componentTypes[comp2.type.name]).to.equal(comp2)			
-			expect(mocknode.componentTypes[comp3.type.name]).to.equal(comp3)			
-	})
-
-	it('can create a node with an array of component types using fluent style',function(){
-		var comp1 = ComponentFactory().withName('mockcomp1').create(),
-			comp2 = ComponentFactory().withName('mockcomp2').create(),
-			comp3 = ComponentFactory().withName('mockcomp3').create()
-			mocknode = NodeFactory().withComponents([comp1,comp2,comp3]).create()
-
-			expect(mocknode.componentTypes[comp1.type.name]).to.be.ok;
-			expect(mocknode.componentTypes[comp2.type.name]).to.be.ok;
-			expect(mocknode.componentTypes[comp3.type.name]).to.be.ok;
-
-			expect(mocknode.componentTypes[comp1.type.name]).to.equal(comp1)		
-			expect(mocknode.componentTypes[comp2.type.name]).to.equal(comp2)			
-			expect(mocknode.componentTypes[comp3.type.name]).to.equal(comp3)			
-
-	})
-
-	it('node inherits properties from components', function() {
-		var CompPrototype1 = ComponentFactory()
-								.props({foo: 'foo', bar:'bar', baz : {foo:'foobarbaz'}})
-								.withName('fooComponent'),
-			component1 = CompPrototype1.create(),
-			node = NodeFactory().withName('FooNode').withComponents(component1).create()
-
-			expect(node).to.have.property(component1.type)
-			expect( node[component1.type] ).to.have.property('foo')
-			expect( node[component1.type] ).to.have.property('bar')
-			expect( node[component1.type] ).to.have.property('baz')			
-			expect( node[component1.type].foo ).to.equal('foo')
-			expect( node[component1.type].bar ).to.equal('bar')
-			expect( node[component1.type].baz.foo ).to.equal('foobarbaz')
-
+		expect(mockNode.componentTypes).to.contain(mockcomponent.type)
 	})
 
 	it('can create a nodes with different types',function(){		
@@ -110,5 +44,23 @@ describe('# Node Test',function(){
 		node.entity = mockEntity
 
 		expect(node.entity).to.exist
+		expect(node.entity).to.equal(mockEntity)
 	})
+
+	// it('can inherit component properties from entity', function(){
+	// 	var ComponentPrototype = ComponentFactory().withName('Comp1').props({foo: 'foo'}),
+	// 		ComponentPrototype2 = ComponentFactory().withName('Comp2').props({bar: 'bar'}),
+	// 		ComponentPrototype3 = ComponentFactory().withName('Comp3').props({bar: [1,2,3]})
+
+	// 		comp1 = ComponentPrototype.create()
+	// 		comp2 = ComponentPrototype2.create()
+	// 		comp3 = ComponentPrototype3.create()
+
+	// 	var mockEntity = EntityPrototype.withComponents([comp1,comp2,comp3]).create()
+	// 	var node = NodeFactory().create()
+	// 	node.entity = mockEntity
+
+	// 	console.log(mockEntity)
+
+	// })
 })

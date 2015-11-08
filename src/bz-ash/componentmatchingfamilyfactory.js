@@ -1,45 +1,99 @@
 var stampit = require('stampit'),
 	DictionaryPrototype = require('../bzutil/dictionary'),
 	NodelistPrototype = require('./nodelist'),
-	NodeFactoryPrototype = require('./nodefactory'),
+	NodePoolFactory = require('./nodepoolfactory'),
 	DEFAULT_TYPE_NAME = "AnonymousMatchingFamily"
-	DEFAULT_NODE_TYPE = "AnonymousMatchingFamily"
 
 
 
-module.exports = function(config) {
-    var typeName = config ? (config.typeName || DEFAULT_TYPE_NAME) : DEFAULT_TYPE_NAME,
-    	type     = config ? (config.nodeType || DEFAULT_NODE_TYPE) : DEFAULT_NODE_TYPE,
-      	
-      	prototypeType = { name: typeName,
-      					  nodeType: type },
-		res = stampit()
-		  .refs({
-		    type: prototypeType,             
-		    nodeType: prototypeType.nodeType
-		  })
-		  .init(function initTypes(param) {
 
-			this.entityNodeMap = DictionaryPrototype.create()
-			this.nodelist = NodelistPrototype.create()
-			this.components = DictionaryPrototype.create()
-		  })          
-		  .static({
-		    type: prototypeType
-		  })
-		  .methods({
-			newEntity: function newEntity(e) {
-							if( this.entityNodeMap.has(e) ){
-								addIfMatch(entity)		
-							}								
-						},
-			addIfMatch: function addIfMatch(e) {
-				//create node
-				//add entity to the node
-				//add the entity, node pair to the dictionary
-			}
-		  })
+module.exports = function() {
+	var config
+	 = { name: DEFAULT_TYPE_NAME,
+						  nodePrototype: null }
 
-	return res;
-}
-	
+	function onComponentRemovedFromEntity(entity, componentType) {
+
+	}
+
+	return stampit()
+			  .refs({
+			    type: config
+			  })
+			  .init(function initStateVars() {
+				this.entityNodeMap = DictionaryPrototype.create() // (entity, node) map
+				this.nodelist = NodelistPrototype.create()
+				this.componentMap = DictionaryPrototype.create()  // (componentType, typeName)	
+				this.nodePrototype = undefined
+			  })
+			  .init(function initNodeType(params) {
+			  	this.nodePrototype = config.nodePrototype
+			  	})
+			  .init(function initComponentMap(params){
+			  	if(this.nodePrototype) {
+				  	this.nodePrototype.componentTypes.forEach(function forEachInitTypes(t) {
+				  												this.componentMap.add(t, t.name)
+				  											}, this)
+				}
+			  })
+			  .init(function initNodePool() {
+			  	this.nodePool = NodePoolFactory().withNodePrototype(this.type.nodePrototype).create()
+			  })
+			  .static({
+			    type: config,
+			    withName: function withName(name) {			
+								config.name = name								
+								return this
+							},
+				withNodePrototype: function withNodePrototype(nodeProto) {
+								config.nodePrototype = nodeProto
+								return this
+							}
+			  })
+			  .methods({
+				newEntity: function newEntity(e) {
+								if( !this.entityNodeMap.has(e) ){
+									this.addIfMatch(e)		
+								}								
+							},
+				addIfMatch: function addIfMatch(e) {
+					//if the entity's components match all of the components 
+					//that this family has registered then
+					//create a node (or get it from the pool)
+					// set its entity to e
+					// set its properties to e.component.property values
+					//create node
+					if(!this.entityNodeMap.has(e)) {
+						//does this entity have all of the necessary components to be in the family
+						// console.log(this.componentMap)
+						var shouldAdd = e.componentMap.size() > 0 && 
+										e.componentMap.keys.every(function (entityCompType) {
+																	return this.componentMap.has(entityCompType)
+																}, this)
+						if(shouldAdd) {
+							//get a new node from the node pool
+							var node = this.nodePool.get()
+							node.entity = e
+							//set node componentType property equal to entity component
+							
+							this.componentMap.forEach( function(k,v){
+								node[k.name] = e.componentMap.get(k)
+							})
+
+							//add entity and node to entity node map
+							this.entityNodeMap.add(e,node)
+							//add component removed listener to the entity component
+							e.componentRemoved.add(onComponentRemovedFromEntity,this)
+							//add node to this.nodelist
+							this.nodelist.add(node)
+							
+						}											
+						
+
+						//this.entityNodeMap.add(e,node)
+					}
+					//add entity to the node
+					//add the entity, node pair to the dictionary
+				}
+			  })
+	}

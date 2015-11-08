@@ -86,7 +86,7 @@ module.exports = function() {
 
                                 //register each component name and type with this node
                                 args.forEach(function argsForEach(a) {
-                                  this.config.componentTypes.add(a.type, a) 
+                                  this.config.componentTypes.add(a.type, a)                                   
                                 }, this)
 
 
