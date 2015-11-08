@@ -57,12 +57,17 @@ var NumberNodePrototype = NodeFactory()
 								.withComponentTypes( StringComponentPrototype.type, 
 													 ObjectComponentPrototype.type,
 													 NumberComponentPrototype.type)
-								.withName( 'UniversalNode')
+								.withName( 'UniversalNode'),
+	NumberObjectNodePrototype = NodeFactory()
+									.withComponentTypes( NumberComponentPrototype.type, ObjectComponentPrototype.type)
+									.withName( 'NumberObjectNode' )
+
 
 var numberNode = NumberNodePrototype.create(),
 	stringNode = StringNodePrototype.create(),
 	stringObjectNode = StringObjectNodePrototype.create(),
-	universalNode = UniversalNodePrototype.create()
+	universalNode = UniversalNodePrototype.create(),
+	numberObjectNode = NumberObjectNodePrototype.create()
 
 
 
@@ -70,8 +75,12 @@ var numberNode = NumberNodePrototype.create(),
 
 
 module.exports = {
-	nodes : [numberNode, stringNode, stringObjectNode, universalNode],
+	nodes : [numberNode, stringNode, stringObjectNode, universalNode, numberObjectNode],
 	entities: [numberEntity, stringEntity, stringEntity1, nameNumberEntity, numberObjectEntity],
 	components: [stringComp, numberComp, objComp],
-	nodePrototypes: [NumberNodePrototype, StringNodePrototype, StringObjectNodePrototype, UniversalNodePrototype]
+	nodePrototypes: [NumberNodePrototype, 
+					 StringNodePrototype, 
+					 StringObjectNodePrototype, 
+					 UniversalNodePrototype,
+					 NumberObjectNodePrototype]
 }
