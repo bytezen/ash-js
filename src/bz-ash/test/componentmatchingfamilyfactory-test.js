@@ -146,7 +146,6 @@ describe('#Component Matching Family',function(){
 					.withNodePrototype( stringObjectNodePrototype ).create()
 
 		family.newEntity( stringEntity )
-		console.log( family )
 
 		expect(family.nodelist.head).to.be.null
 	})
@@ -172,9 +171,46 @@ describe('#Component Matching Family',function(){
 									).to.be.true
     })
 
-  //   it('matching Entity Is Added When Component Added', function() {
-		// family = FamilyFactory().withNodePrototype( numberObjectNodePrototype ).create()    	
-  //   })
+    it('matching Entity Is Added When Component Added', function() {
+		var UniversalNodePrototype = MockData.nodePrototypes[3],
+			stringComp = MockData.components[0],
+			numberComp = MockData.components[2],
+			objectComp = MockData.components[5],
+			blankEntity = EntityFactory().create()
+
+// [stringComp,
+// 				 stringComp1, 
+// 				 numberComp, 
+// 				 numberComp1, 
+// 				 numberComp2, 
+// 				 objComp],
+
+		family = FamilyFactory().withNodePrototype( UniversalNodePrototype ).create()
+		expect(family.nodelist.head).to.be.null
+		
+		family.newEntity( blankEntity )
+		expect(family.nodelist.head).to.be.null
+		
+		blankEntity.add( stringComp )
+		family.componentAddedToEntity( blankEntity, stringComp.type )
+		expect(family.nodelist.head).to.be.null
+
+		blankEntity.add( numberComp )
+		family.componentAddedToEntity( blankEntity, numberComp.type )
+		expect(family.nodelist.head).to.be.null
+
+		blankEntity.add( objectComp )
+		family.componentAddedToEntity( blankEntity, objectComp.type )
+		expect(family.nodelist.head.entity).to.equal( blankEntity )
+		expect(family.nodelist.tail.entity).to.equal( blankEntity )
+
+
+		// expect(family.nodelist.head.entity).to.equal( blankEntity )
+		// expect(family.nodelist.tail.entity).to.equal( blankEntity )
+
+
+
+    })
 
     it('nonMatchingEntityIsNotAddedWhenComponentAdded')
 
