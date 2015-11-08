@@ -103,34 +103,87 @@ describe('#Component Matching Family',function(){
 
 	})
 
+	it('can add and access single entity',function(){
+		var stringNodePrototype = MockData.nodePrototypes[1],
+			stringEntity = MockData.entities[1]
+
+		family = FamilyFactory().withNodePrototype( stringNodePrototype ).create()
+		family.newEntity( stringEntity )				
+
+		expect(family.nodelist.head.entity).to.equal( stringEntity )
+		expect(family.nodelist.tail.entity).to.equal( stringEntity )
+	})
+
+	it('can add and access second entity',function(){
+		var stringNodePrototype = MockData.nodePrototypes[1],
+			stringEntity = MockData.entities[1],			
+			stringEntity1 = MockData.entities[2],
+			
+
+		family = FamilyFactory().withNodePrototype( stringNodePrototype ).create()
+		family.newEntity( stringEntity )		
+		family.newEntity( stringEntity1 )
+
+		expect(family.nodelist.head.entity).to.equal( stringEntity )
+		expect(family.nodelist.tail.entity).to.equal( stringEntity1 )
+	})
+
 	it('will not add entity that does not have matching components',function(){
 		var stringNodePrototype = MockData.nodePrototypes[1],
 			stringEntity = MockData.entities[1],
-			stringEntity1 = MockData.entities[2],
 			numberEntity = MockData.entities[0]
 
 		family = FamilyFactory().withNodePrototype( stringNodePrototype ).create()
 		family.newEntity( stringEntity )
-		family.newEntity( stringEntity1 )
 		family.newEntity( numberEntity )
 
 		expect(family.nodelist.head.entity).to.equal( stringEntity )
-		expect(family.nodelist.tail.entity).to.equal( stringEntity1 )
-
-
+		expect(family.nodelist.tail.entity).to.equal( stringEntity )
 	})
-	// it('creates a node of the correct type when a valid entity is added',function(){
-	// 	throw Error('not implemented')
-	// })
 
-	// it('does not create a node for non matching entities',function(){
-	// 	throw Error('not implemented')
-	// })
+    it('node Contains Entity Properties', function() {
+    	var numberObjectNodePrototype = MockData.nodePrototypes[4],
+    		numberObjectEntity = MockData.entities[4]
+    		NodeProperties = []
+
+    		numberObjectNodePrototype.componentTypes.forEach(function (t) {
+    			NodeProperties.push(t.name)
+    		})
 
 
-	// it('creates empty nodelist', function(){
+		family = FamilyFactory().withNodePrototype( numberObjectNodePrototype ).create()
+		family.newEntity( numberObjectEntity )
+		var nodelist = family.nodelist,
+			node = nodelist.head
 
-	// 	expect(family.nodelist).to.be.undefined
+		expect(NodeProperties.every(function(prop){
+										return node.hasOwnProperty(prop)
+									})
+									).to.be.true
+    })
 
-	// })
+    it('matchingEntityIsAddedWhenComponentAdded')
+
+    it('nonMatchingEntityIsNotAdded')
+
+    it('nonMatchingEntityIsNotAddedWhenComponentAdded')
+
+    it('entityIsRemovedWhenAccessNodeListFirst')
+
+    it('entityIsRemovedWhenAccessNodeListSecond')
+
+    it('entityIsRemovedWhenComponentRemoved')
+
+    it('nodeListContainsOnlyMatchingEntities')
+
+	it('nodeListContainsOnlyMatchingEntitiesWhenComponentRemoved')
+	
+    it('nodeListContainsAllMatchingEntities')
+
+    it('cleanUpEmptiesNodeList')
+
+    it('cleanUpSetsNextNodeToNull')	
+
+
+
 })
