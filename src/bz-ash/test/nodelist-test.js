@@ -1,6 +1,6 @@
 var expect = require('chai').expect,
- 	nodelistPrototype = require('../src/bz-ash/nodelist'),
- 	NodePrototype = require('../src/bz-ash/node'),
+ 	nodelistPrototype = require('../nodelist'),
+ 	NodePrototype = require('../nodefactory')(),
  	Signal = require('signals')
  
 
@@ -45,8 +45,7 @@ describe('#Nodelist ',function(){
 	it('## can add node', function() {			
 		list.add(mNode)
 
-		expect(list.head).to.equal(mNode).to.equal(list.tail)		
-		
+		expect(list.head).to.equal(mNode).to.equal(list.tail)				
 	})
 
 	it('## add node triggers signal', function(done) { 	
@@ -229,30 +228,14 @@ describe('#Nodelist ',function(){
 		
 	})
 
-	it('## insertion sort correctly sorts sorted nodes', function() { 
-		throw Error("not implemented")
-	})
-	it('## insertion sort correctly sorts reversed nodes', function() { 
-		throw Error("not implemented")
-	})
-	it('## insertion sort correctly sorts mixed nodes', function() { 
-		throw Error("not implemented")
-	})
-	it('## insertion sort correctly retains order of equivalent nodes', function() { 
-		throw Error("not implemented")
-	})
-	it('## merge sort correctly sorts sorted nodes', function() { 
-		throw Error("not implemented")
-	})
-	it('## merge sort correctly sorts reversed nodes', function() { 
-		throw Error("not implemented")
-	})
-	it('## merge sort correctly sorts mixed nodes', function() { 
-		throw Error("not implemented")
-	})
-	it('## merge sort correctly retains order of equivalent nodes', function() { 
-		throw Error("not implemented")
-	})
+	it('## insertion sort correctly sorts sorted nodes' )
+	it('## insertion sort correctly sorts reversed nodes' )
+	it('## insertion sort correctly sorts mixed nodes' )
+	it('## insertion sort correctly retains order of equivalent nodes' )
+	it('## merge sort correctly sorts sorted nodes' )
+	it('## merge sort correctly sorts reversed nodes' )
+	it('## merge sort correctly sorts mixed nodes' )
+	it('## merge sort correctly retains order of equivalent nodes' )
 
 
 

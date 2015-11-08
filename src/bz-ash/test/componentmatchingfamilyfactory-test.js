@@ -189,32 +189,56 @@ describe('#Component Matching Family',function(){
 		expect(family.nodelist.head).to.be.null
 		
 		family.newEntity( blankEntity )
-		expect(family.nodelist.head).to.be.null
+
 		
 		blankEntity.add( stringComp )
 		family.componentAddedToEntity( blankEntity, stringComp.type )
-		expect(family.nodelist.head).to.be.null
 
 		blankEntity.add( numberComp )
 		family.componentAddedToEntity( blankEntity, numberComp.type )
-		expect(family.nodelist.head).to.be.null
 
 		blankEntity.add( objectComp )
 		family.componentAddedToEntity( blankEntity, objectComp.type )
 		expect(family.nodelist.head.entity).to.equal( blankEntity )
 		expect(family.nodelist.tail.entity).to.equal( blankEntity )
 
+    })
 
-		// expect(family.nodelist.head.entity).to.equal( blankEntity )
-		// expect(family.nodelist.tail.entity).to.equal( blankEntity )
+    it('nonMatchingEntityIsNotAddedWhenComponentAdded', function(){
+		var UniversalNodePrototype = MockData.nodePrototypes[3],
+			stringComp = MockData.components[0],
+			numberComp = MockData.components[2],
+			objectComp = MockData.components[5],
+			blankEntity = EntityFactory().create()
 
 
+		family = FamilyFactory().withNodePrototype( UniversalNodePrototype ).create()
+		expect(family.nodelist.head).to.be.null
+		
+		family.newEntity( blankEntity )
+		expect(family.nodelist.head).to.be.null
+		
+		blankEntity.add( stringComp )
+		family.componentAddedToEntity( blankEntity, stringComp.type )
+		expect(family.nodelist.head).to.be.null    	
 
     })
 
-    it('nonMatchingEntityIsNotAddedWhenComponentAdded')
+    it('entity is removed nodelist when it is first', function() {
+		var StringNodePrototype = MockData.nodePrototypes[1],
+			stringEntity = MockData.entities[1]
 
-    it('entityIsRemovedWhenAccessNodeListFirst')
+		family = FamilyFactory().withNodePrototype( StringNodePrototype ).create()
+
+		family.newEntity( stringEntity )
+		expect(family.nodelist.head.entity).to.be.equal( stringEntity )    	
+		expect(family.nodelist.tail.entity).to.be.equal( stringEntity )    	
+
+		family.removeEntity( stringEntity )		
+		expect(family.nodelist.head).to.be.null
+		expect(family.nodelist.tail).to.be.null
+
+    })
 
     it('entityIsRemovedWhenAccessNodeListSecond')
 

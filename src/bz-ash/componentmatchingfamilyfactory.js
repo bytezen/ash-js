@@ -34,7 +34,9 @@ module.exports = function() {
 				}
 			  })
 			  .init(function initNodePool() {
-			  	this.nodePool = NodePoolFactory().withNodePrototype(this.type.nodePrototype).create()
+			  	this.nodePool = NodePoolFactory()
+			  						.withNodePrototype(this.type.nodePrototype)
+			  						.create({componentMap: this.componentMap})
 			  })
 			  .static({
 			    type: config,
@@ -53,6 +55,9 @@ module.exports = function() {
 									this.addIfMatch(e)		
 								}								
 							},
+				removeEntity: function removeEntity(e) {
+								this.removeIfMatch(e)
+							},			
 				addIfMatch: function addIfMatch(e) {
 								//if the entity's components match all of the components 
 								//that this family has registered then
@@ -91,6 +96,25 @@ module.exports = function() {
 								}
 								//add entity to the node
 								//add the entity, node pair to the dictionary
+							},
+				removeIfMatch: function removeIfMatch(e) {
+									if(this.entityNodeMap.has(e)) {
+										var node = this.entityNodeMap.get(e)
+										//remove handler
+										e.componentRemoved.remove(this.componentRemovedFromEntity)
+										console.log(this.nodelist)
+										this.nodelist.remove(node)
+										console.log('----------')
+										console.log(this.nodelist)
+										this.entityNodeMap.remove(e)
+
+						                // if (this.engine.updating) {
+						                    // nodePool.cache(node);
+						                    // engine.updateComplete.add(this.releaseNodePoolCache, this);
+						                // } else {
+						                	this.nodePool.dispose(node);
+						                // }										
+									}
 							},
 				componentAddedToEntity: function onComponentAddedToEntity(entity, componentType) {
 											this.addIfMatch(entity)

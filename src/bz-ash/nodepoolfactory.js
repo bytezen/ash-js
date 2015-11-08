@@ -10,7 +10,7 @@ module.exports = function() {
 						nodePrototype: null,
 						cacheTail: null,
 						tail: null,
-						component: null //TODO: component dictionary passed in as prototype maker ?
+						componentMap: null //(componentType, typeName)	
 					})
 					.methods({
 						cache: function cache(node) {
@@ -29,7 +29,16 @@ module.exports = function() {
 							}
 
 							return node
+						},
 
+						dispose: function dispose( node ) {
+							this.componentMap.forEach( function(componentType, typeName) {
+								node[typeName] = null;
+							})
+							node.entity = null
+				            node.next = null
+				            node.previous = this.tail
+				            this.tail = node							
 						}
 					})
 					.static({
@@ -39,8 +48,7 @@ module.exports = function() {
 							return this
 						}
 					})
-					.init(function(params){					
+					.init(function initNodePrototype (params){					
 						this.nodePrototype = params.stamp.nodePrototype
-						
 					})
 	}

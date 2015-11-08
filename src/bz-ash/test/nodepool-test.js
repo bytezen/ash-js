@@ -71,6 +71,7 @@ describe('#Nodepool',function(){
 
 		})
 
+		it('can dispose of a node')
 		it('can release cache of nodes')//,function(){
 		// 	nodepool.releaseCache()
 		// 	expect(nodepool.cacheTail).to.be.null

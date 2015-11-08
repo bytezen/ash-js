@@ -23,42 +23,40 @@ module.exports = stampit().props({
 		this.nodeAdded.dispatch(node)
 	},
 	remove: function removeNode( node ) {
-		var prevNode
-
+		
 		if( this.head === node ) {
 			//replace the head
 			this.head = node.next
 
 			if(this.head) {
 				this.head.previous = null
-				prevNode = null
 			}			
 		}
-		else if( this.tail === node ) {
+		if( this.tail === node ) {
 			this.tail = node.previous
 
 			if(this.tail) {
 				this.tail.next = null
-				prevNode = this.tail.previous
 			}
 
-		} else {
-			//the previous node's next property should point to 
-			// this nodes next property
-			if(node.previous !== undefined && node.previous !== null) {
-				node.previous.next = node.next
-			}
+		} 
 
-			if(node.next !== undefined && node.next !== null) {
-				node.next.previous = node.previous
-			}
+		if(node.previous) {
+			node.previous.next = node.next
+		}
 
-			prevNode = node.previous
+		if(node.next) {
+			node.next.previous = node.previous
 		}
 		
 		//clear up the old node
-		// node.previous = null
-		// node.next = null		
+		//this will prevent the removal of nodes in the middle of iterating
+		//however, nodes should only be accessed via the nodelist. Since the node
+		//has been removed from the list the fact that it has a previous and a next
+		// value should not matter. Although these values are now, invalid
+		
+		//node.previous = null
+		//node.next = null		
 
 		this.nodeRemoved.dispatch(node)	
 		
