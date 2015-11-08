@@ -12,9 +12,6 @@ module.exports = function() {
 	 = { name: DEFAULT_TYPE_NAME,
 						  nodePrototype: null }
 
-	function onComponentRemovedFromEntity(entity, componentType) {
-
-	}
 
 	return stampit()
 			  .refs({
@@ -57,43 +54,48 @@ module.exports = function() {
 								}								
 							},
 				addIfMatch: function addIfMatch(e) {
-					//if the entity's components match all of the components 
-					//that this family has registered then
-					//create a node (or get it from the pool)
-					// set its entity to e
-					// set its properties to e.component.property values
-					//create node
-					if(!this.entityNodeMap.has(e)) {
-						//does this entity have all of the necessary components to be in the family
-						// console.log(this.componentMap)
-						var shouldAdd = e.componentMap.size() > 0 && 
-										e.componentMap.keys.every(function (entityCompType) {
-																	return this.componentMap.has(entityCompType)
-																}, this)
-						if(shouldAdd) {
-							//get a new node from the node pool
-							var node = this.nodePool.get()
-							node.entity = e
-							//set node componentType property equal to entity component
-							
-							this.componentMap.forEach( function(k,v){
-								node[k.name] = e.componentMap.get(k)
-							})
+								//if the entity's components match all of the components 
+								//that this family has registered then
+								//create a node (or get it from the pool)
+								// set its entity to e
+								// set its properties to e.component.property values
+								//create node
+								if(!this.entityNodeMap.has(e)) {
+									//does this entity have all of the necessary components to be in the family
+									// console.log(this.componentMap)
+									var shouldAdd = e.componentMap.size() > 0 && 
+													this.componentMap.keys.every(function (familyCompType) {
+																				return e.componentMap.has(familyCompType)
+																			}, this)									
+									if(shouldAdd) {
+										//get a new node from the node pool
+										var node = this.nodePool.get()
+										node.entity = e
+										//set node componentType property equal to entity component
+										
+										this.componentMap.forEach( function(k,v){
+											node[k.name] = e.componentMap.get(k)
+										})
 
-							//add entity and node to entity node map
-							this.entityNodeMap.add(e,node)
-							//add component removed listener to the entity component
-							e.componentRemoved.add(onComponentRemovedFromEntity,this)
-							//add node to this.nodelist
-							this.nodelist.add(node)
-							
-						}											
-						
+										//add entity and node to entity node map
+										this.entityNodeMap.add(e,node)
+										//add component removed listener to the entity component
+										e.componentRemoved.add(this.componentRemovedFromEntity,this)
+										//add node to this.nodelist
+										this.nodelist.add(node)
+										
+									}											
+									
 
-						//this.entityNodeMap.add(e,node)
-					}
-					//add entity to the node
-					//add the entity, node pair to the dictionary
-				}
+									//this.entityNodeMap.add(e,node)
+								}
+								//add entity to the node
+								//add the entity, node pair to the dictionary
+							},
+				componentAddedToEntity: function onComponentAddedToEntity(entity, componentType) {
+											this.addIfMatch(entity)
+										},
+				componentRemovedFromEntity: function onComponentRemovedFromEntity(entity, componentType) {
+															}
 			  })
 	}

@@ -130,6 +130,7 @@ describe('#Component Matching Family',function(){
 
 	it('will not add entity that does not have matching components',function(){
 		var stringNodePrototype = MockData.nodePrototypes[1],
+			stringObjectNodePrototype = MockData.nodePrototypes[2],
 			stringEntity = MockData.entities[1],
 			numberEntity = MockData.entities[0]
 
@@ -139,6 +140,15 @@ describe('#Component Matching Family',function(){
 
 		expect(family.nodelist.head.entity).to.equal( stringEntity )
 		expect(family.nodelist.tail.entity).to.equal( stringEntity )
+
+		family = FamilyFactory()
+					.withName( 'StringObjectNode')
+					.withNodePrototype( stringObjectNodePrototype ).create()
+
+		family.newEntity( stringEntity )
+		console.log( family )
+
+		expect(family.nodelist.head).to.be.null
 	})
 
     it('node Contains Entity Properties', function() {
@@ -162,9 +172,9 @@ describe('#Component Matching Family',function(){
 									).to.be.true
     })
 
-    it('matchingEntityIsAddedWhenComponentAdded')
-
-    it('nonMatchingEntityIsNotAdded')
+  //   it('matching Entity Is Added When Component Added', function() {
+		// family = FamilyFactory().withNodePrototype( numberObjectNodePrototype ).create()    	
+  //   })
 
     it('nonMatchingEntityIsNotAddedWhenComponentAdded')
 
