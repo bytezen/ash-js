@@ -102,10 +102,7 @@ module.exports = function() {
 										var node = this.entityNodeMap.get(e)
 										//remove handler
 										e.componentRemoved.remove(this.componentRemovedFromEntity)
-										console.log(this.nodelist)
 										this.nodelist.remove(node)
-										console.log('----------')
-										console.log(this.nodelist)
 										this.entityNodeMap.remove(e)
 
 						                // if (this.engine.updating) {
@@ -116,10 +113,18 @@ module.exports = function() {
 						                // }										
 									}
 							},
+				cleanUp: function cleanUp(){ 
+								var nodeIter = this.nodelist.tail
+								while(nodeIter) {
+									this.nodelist.remove(nodeIter)
+									nodeIter = nodeIter.previous
+								}
+						}, 
 				componentAddedToEntity: function onComponentAddedToEntity(entity, componentType) {
 											this.addIfMatch(entity)
 										},
 				componentRemovedFromEntity: function onComponentRemovedFromEntity(entity, componentType) {
+											this.removeIfMatch(entity)
 															}
 			  })
 	}

@@ -11,13 +11,15 @@ var StringComponentPrototype = ComponentFactory().withName('stringcomponent').pr
 	ObjectComponentPrototype = ComponentFactory().withName('objectcomponent').props({bar: {foo: 'what', bar: 200}})
 
 var stringComp = StringComponentPrototype.create(), 
-	stringComp1 = StringComponentPrototype.create(),
+	stringComp1 = StringComponentPrototype.create({value:'bar'}),
 
 	numberComp = NumberComponentPrototype.create(),
 	numberComp1 = NumberComponentPrototype.create(),
 	numberComp2 = NumberComponentPrototype.create(),
 
-	objComp = ObjectComponentPrototype.create()
+	objComp = ObjectComponentPrototype.create({foo:'bar', bar: 300}),
+	objComp1 = ObjectComponentPrototype.create({bar:'foo'}),
+	objComp2 = ObjectComponentPrototype.create()
 
 //---
 // entities
@@ -37,6 +39,12 @@ var nameNumberEntity = EntityFactory()
 							.create(),
 	stringEntity1 = EntityFactory()
 							.withComponents(stringComp)
+							.create(),
+	objectEntity = EntityFactory()
+							.withComponents(objComp1)
+							.create(),
+	objectEntity1 = EntityFactory()
+							.withComponents(objComp2)
 							.create()
 
 
@@ -60,27 +68,50 @@ var NumberNodePrototype = NodeFactory()
 								.withName( 'UniversalNode'),
 	NumberObjectNodePrototype = NodeFactory()
 									.withComponentTypes( NumberComponentPrototype.type, ObjectComponentPrototype.type)
-									.withName( 'NumberObjectNode' )
+									.withName( 'NumberObjectNode' ),
+	ObjectNodePrototype = NodeFactory()
+								.withName('ObjectNode')
+								.withComponentTypes( ObjectComponentPrototype.type )
 
 
 var numberNode = NumberNodePrototype.create(),
 	stringNode = StringNodePrototype.create(),
 	stringObjectNode = StringObjectNodePrototype.create(),
 	universalNode = UniversalNodePrototype.create(),
-	numberObjectNode = NumberObjectNodePrototype.create()
-
-
-
+	numberObjectNode = NumberObjectNodePrototype.create(),
+	objectNode = ObjectNodePrototype.create()
 
 
 
 module.exports = {
-	nodes : [numberNode, stringNode, stringObjectNode, universalNode, numberObjectNode],
-	entities: [numberEntity, stringEntity, stringEntity1, nameNumberEntity, numberObjectEntity],
-	components: [stringComp, numberComp, objComp],
+	nodes : [numberNode, 
+			 stringNode, 
+			 stringObjectNode, 
+			 universalNode, 
+			 numberObjectNode,
+			 objectNode],
+
+	entities: [numberEntity, 
+			   stringEntity, 
+			   stringEntity1, 
+			   nameNumberEntity, 
+			   numberObjectEntity,
+			   objectEntity,
+			   objectEntity1],
+
+	components: [stringComp,
+				 stringComp1, 
+				 numberComp, 
+				 numberComp1, 
+				 numberComp2, 
+				 objComp,
+				 objComp1,
+				 objComp2],
+
 	nodePrototypes: [NumberNodePrototype, 
 					 StringNodePrototype, 
 					 StringObjectNodePrototype, 
 					 UniversalNodePrototype,
-					 NumberObjectNodePrototype]
+					 NumberObjectNodePrototype,
+					 ObjectNodePrototype]
 }

@@ -225,8 +225,9 @@ describe('#Component Matching Family',function(){
     })
 
     it('entity is removed nodelist when it is first', function() {
-		var StringNodePrototype = MockData.nodePrototypes[1],
-			stringEntity = MockData.entities[1]
+		var StringNodePrototype = MockData.nodePrototypes[1],		
+			stringEntity = MockData.entities[1],
+			stringEntity1 = MockData.entities[2]
 
 		family = FamilyFactory().withNodePrototype( StringNodePrototype ).create()
 
@@ -238,21 +239,207 @@ describe('#Component Matching Family',function(){
 		expect(family.nodelist.head).to.be.null
 		expect(family.nodelist.tail).to.be.null
 
+		family.newEntity( stringEntity )
+		family.newEntity( stringEntity1 )
+
+		family.removeEntity( stringEntity )
+
+		expect(family.nodelist.head.entity).to.equal(stringEntity1)
+		expect(family.nodelist.tail.entity).to.equal(stringEntity1)
+
     })
 
-    it('entityIsRemovedWhenAccessNodeListSecond')
+    it('entity is removed from nodelist when it is second', function(){
+		var StringNodePrototype = MockData.nodePrototypes[1],
+			stringEntity = MockData.entities[1],
+			stringEntity1 = MockData.entities[2]
 
-    it('entityIsRemovedWhenComponentRemoved')
+		family = FamilyFactory().withNodePrototype( StringNodePrototype ).create()
 
-    it('nodeListContainsOnlyMatchingEntities')
+		family.newEntity( stringEntity )
+		family.newEntity( stringEntity1 )
 
-	it('nodeListContainsOnlyMatchingEntitiesWhenComponentRemoved')
+		expect(family.nodelist.head.entity).to.be.equal( stringEntity)    	
+		expect(family.nodelist.tail.entity).to.be.equal( stringEntity1 )    	
+
+		family.removeEntity( stringEntity1 )		    	
+		expect(family.nodelist.head.entity).to.be.equal( stringEntity )    	
+		expect(family.nodelist.tail.entity).to.be.equal( stringEntity )    	
+
+    })
+
+    it('entity is removed when component in family is removed ', function(){
+		var NumberObjectNodePrototype = MockData.nodePrototypes[4],
+			numberComp = MockData.components[3],
+			objectComp = MockData.components[5],
+			numberObjectEntity = MockData.entities[4]
+
+
+		family = FamilyFactory().withNodePrototype( NumberObjectNodePrototype ).create()
+		family.newEntity( numberObjectEntity )
+
+		expect(family.nodelist.head.entity).to.equal( numberObjectEntity )
+		expect(family.nodelist.tail.entity).to.equal( numberObjectEntity )
+
+		numberObjectEntity.remove( numberComp )
+		family.componentRemovedFromEntity( numberObjectEntity, numberComp )
+
+		expect(family.nodelist.head).to.be.null
+		expect(family.nodelist.tail).to.be.null
+
+
+    })
+
+    it('nodeList Contains Only Matching Entities', function(){
+		var StringNodePrototype = MockData.nodePrototypes[1],
+			nameNumberEntity = MockData.entities[3], 
+			stringEntity = MockData.entities[1],  
+			stringEntity1 = MockData.entities[2],    	
+    		family = FamilyFactory().withNodePrototype( StringNodePrototype ).create()
+    	
+    	//MockData.entities has 3 entities with String components
+    	MockData.entities.forEach(function (e){
+    								family.newEntity(e)
+    							})
+
+    	var nodelist = family.nodelist,
+    		nodeIter = nodelist.head,
+    		count = 0
+
+    	for( ;nodeIter; nodeIter = nodeIter.next) {
+    		count++
+    		
+    		expect( [nameNumberEntity, stringEntity, stringEntity1] ).to.include(nodeIter.entity)
+    	}
+
+    	expect(count).to.equal(3)
+
+
+    })
+
+	it('nodeList Contains Only Matching Entities When Component Removed', function(){
+		var StringNodePrototype = MockData.nodePrototypes[1],
+			StringComponentType = MockData.components[1].type
+			nameNumberEntity = MockData.entities[3], 
+			stringEntity = MockData.entities[1],  
+			stringEntity1 = MockData.entities[2],    	
+    		family = FamilyFactory().withNodePrototype( StringNodePrototype ).create()
+    	
+    	//MockData.entities has 3 entities with String components
+    	MockData.entities.forEach(function (e){
+    								family.newEntity(e)
+    							})
+
+    	var nodelist = family.nodelist,
+    		nodeIter = nodelist.head,
+    		count = 0
+
+    	for( ;nodeIter; nodeIter = nodeIter.next) {
+    		count++
+    		
+    		expect( [nameNumberEntity, stringEntity, stringEntity1] ).to.include(nodeIter.entity)
+    	}
+
+    	expect(count).to.equal(3)
+
+    	var compToRemove = stringEntity.get( StringComponentType )
+    	stringEntity.remove(compToRemove)
+
+    	count = 0
+    	nodeIter = nodelist.head
+    	for( ;nodeIter; nodeIter = nodeIter.next) {
+    		count++    	
+    		expect( [nameNumberEntity, stringEntity1] ).to.include(nodeIter.entity)
+    	}
+    	expect(count).to.equal(2)
+
+
+	})
 	
-    it('nodeListContainsAllMatchingEntities')
+    it('nodelist Contains All Matching Entities', function(){
+    	var ObjectNodePrototype = MockData.nodePrototypes[5],
+    		numberObjectEntity = MockData.entities[4],
+    		objectEntity = MockData.entities[5],
+    		objectEntity1 = MockData.entities[6],
+    		objComp = MockData.components[5],
+    		objComp1 = MockData.components[6],
+    		objComp2 = MockData.components[7]
+    		count = 0,
+    		hasComponent = false,
+    		entity = null,
+    		nodeIter = null
 
-    it('cleanUpEmptiesNodeList')
+    	family = FamilyFactory().withNodePrototype( ObjectNodePrototype ).withName( ' ObjectNodeFamily').create()
 
-    it('cleanUpSetsNextNodeToNull')	
+    	MockData.entities.forEach( function(e){
+    		family.newEntity(e)
+    	})
+
+    	nodeIter = family.nodelist.head
+    	for( ;nodeIter; nodeIter= nodeIter.next) {
+    		count++
+    		entity = nodeIter.entity
+    		expect( [ numberObjectEntity, objectEntity, objectEntity1]).to.include(nodeIter.entity) 
+    		//these should all be the same type
+    		hasComponent = entity.has( objComp.type ) || entity.has( objComp1.type ) || entity.has( objComp2.type )
+    		expect( hasComponent ).to.be.true 
+    	}
+
+    	expect(count).to.equal(3)
+    })
+
+    it('cleanUpEmptiesNodeList', function(){
+    	var ObjectNodePrototype = MockData.nodePrototypes[5],
+    		numberObjectEntity = MockData.entities[4],
+    		objectEntity = MockData.entities[5],
+    		objectEntity1 = MockData.entities[6],
+    		count = 0
+
+    	family = FamilyFactory().withNodePrototype( ObjectNodePrototype ).withName( ' ObjectNodeFamily').create()
+
+    	MockData.entities.forEach( function(e){
+    		family.newEntity(e)
+    	})
+
+    	nodeIter = family.nodelist.head
+    	for( ;nodeIter; nodeIter= nodeIter.next) {
+    		count++
+    	}
+    	expect(count).to.be.gt(0)
+    	family.cleanUp()
+    	
+    	count = 0
+    	for( ;nodeIter; nodeIter= nodeIter.next) {
+    		count++
+    	}
+
+    	expect(count).to.be.eq(0)
+    	expect(family.nodelist.head).to.be.null    	
+    })
+
+    it('cleanUpSetsNextNodeToNull', function(){
+    	var ObjectNodePrototype = MockData.nodePrototypes[5],
+    		numberObjectEntity = MockData.entities[4],
+    		objectEntity = MockData.entities[5],
+    		objectEntity1 = MockData.entities[6],
+    		count = 0
+
+    	family = FamilyFactory().withNodePrototype( ObjectNodePrototype ).withName( ' ObjectNodeFamily').create()
+
+    	MockData.entities.forEach( function(e){
+    		family.newEntity(e)
+    	})
+
+    	nodeIter = family.nodelist.head
+    	for( ;nodeIter; nodeIter= nodeIter.next) {
+    		count++
+    	}
+    	expect(count).to.be.gt(0)
+    	nodeIter = family.nodelist.head
+    	family.cleanUp()
+
+    	expect(nodeIter.next).to.be.null
+    })	
 
 
 
