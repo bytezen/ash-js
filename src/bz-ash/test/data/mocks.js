@@ -1,6 +1,7 @@
 var ComponentFactory = require('../../componentfactory'),
 	NodeFactory = require('../../nodefactory'),
-	EntityFactory = require('../../entityfactory')
+	EntityFactory = require('../../entityfactory'),
+	FamilyFactory = require('../../componentmatchingfamilyfactory')
 
 //---
 // components
@@ -81,6 +82,27 @@ var numberNode = NumberNodePrototype.create(),
 	numberObjectNode = NumberObjectNodePrototype.create(),
 	objectNode = ObjectNodePrototype.create()
 
+//---
+//Component Matching Famililes
+//---
+	var NumberFamily 	= FamilyFactory()
+								.withNodePrototype( NumberNodePrototype )
+								.withName('NumberFamily')
+	StringFamily 		= FamilyFactory()
+								.withNodePrototype( StringNodePrototype )
+								.withName('StringFamily')
+	StringObjectFamily 		= FamilyFactory()
+								.withNodePrototype( StringObjectNodePrototype )
+								.withName('StringObjectFamily')
+	UniversalFamily 	= FamilyFactory()
+								.withNodePrototype( UniversalNodePrototype )
+								.withName('UniversalFamily')
+	NumberObjectFamily 		= FamilyFactory()
+								.withNodePrototype( NumberObjectNodePrototype )
+								.withName('NumberObjectFamily')
+	ObjectFamily 			= FamilyFactory()
+								.withNodePrototype( ObjectNodePrototype )
+								.withName('ObjectFamily')
 
 
 module.exports = {
@@ -113,5 +135,13 @@ module.exports = {
 					 StringObjectNodePrototype, 
 					 UniversalNodePrototype,
 					 NumberObjectNodePrototype,
-					 ObjectNodePrototype]
+					 ObjectNodePrototype],
+
+	families: 	[ NumberFamily,
+				  StringFamily,
+				  StringObjectFamily,
+				  UniversalFamily,
+				  NumberObjectFamily,
+				  ObjectFamily]					 
+
 }
