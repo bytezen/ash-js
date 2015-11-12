@@ -76,6 +76,19 @@ describe('#Component Matching Family',function(){
 
 	})
 
+	it('can create a family from a node', function(){
+		var node = MockNodePrototype.create(),
+			family = FamilyFactory().withNodePrototype( MockNodePrototype ).create(),
+			family2 = FamilyFactory().withNodePrototype( node ).create(),
+			keys = family.componentMap.keys,
+			keys2 = family.componentMap.keys
+
+			keys.forEach(function(k,i){
+				expect( k ).to.equal( keys2[i] )
+				expect( family.componentMap.get( k ) ).to.equal( family2.componentMap.get( keys2[i] ))
+			})
+	})
+
 	it('adds the correct entity to the family nodelist', function() {
 		var mockFamily,
 			ComponentPrototype1 = ComponentFactory().withName('comp1').props({foo: 23}), 
