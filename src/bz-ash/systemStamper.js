@@ -8,10 +8,13 @@ module.exports = function() {
 	var SystemStamper = stampit()
 							.methods({
 								addToEngine: function addToEngine(engine) {
+												/* implemented by object */
 											 },
 								removeFromEngine: function removeFromEngine(engine) {
+												/* implemented by object */
 											 },										 
 								update: function update(time) {
+												/* implemented by object */
 											 }
 							})				
 	return stampit.compose(TypeStamper(), SystemStamper)						
