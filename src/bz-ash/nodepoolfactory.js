@@ -2,7 +2,6 @@ var stampit = require('stampit'),
 	NodeFactory = require('./nodefactory')
 
 
-
 module.exports = function() {
 
 			return stampit()
@@ -44,11 +43,19 @@ module.exports = function() {
 					.static({
 						nodePrototype: null,
 						withNodePrototype: function withNodePrototype(prototype) {
+							if(prototype.hasOwnProperty('create') && typeof prototype.create != 'function') {
+								throw Error('Node prototype is not a stampit prototype: ' + prototype)
+							}
 							this.nodePrototype = prototype
 							return this
 						}
 					})
 					.init(function initNodePrototype (params){					
 						this.nodePrototype = params.stamp.nodePrototype
+						if(!this.nodePrototype.hasOwnProperty('create') || typeof this.nodePrototype.create != 'function') {
+							throw Error('Node prototype is not a stampit prototype: ' + this.nodePrototype)
+						}						
+
+
 					})
 	}
