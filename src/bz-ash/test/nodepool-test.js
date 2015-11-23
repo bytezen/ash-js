@@ -23,22 +23,16 @@ describe('#Nodepool',function(){
 		mocknode = MockNodePrototype.create()								
 	})
 
-	it('creates an empty nodepool', function(){
-		var nodepool = NodepoolFactory().create()
-		
-		// family = FamilyPrototype.create()
-		expect(nodepool).to.have.property('nodePrototype')
-		expect(nodepool).to.have.property('tail')
-		expect(nodepool).to.have.property('cacheTail')
-		expect(nodepool.tail).to.be.null
-		expect(nodepool.cacheTail).to.be.null
-	})	
-
 	it('can create nodepool with node using fluent style',function(){		
 		
 		var nodepool = NodepoolFactory().withNodePrototype(MockNodePrototype).create()
 			
 		expect(nodepool.nodePrototype).to.equal(MockNodePrototype)
+		expect(nodepool).to.have.property('nodePrototype')
+		expect(nodepool).to.have.property('tail')
+		expect(nodepool).to.have.property('cacheTail')
+		expect(nodepool.tail).to.be.null
+		expect(nodepool.cacheTail).to.be.null
 	})
 
 	it('nodepool has the same components as the node',function(){
@@ -46,12 +40,24 @@ describe('#Nodepool',function(){
 			generatedNode = nodepool.get()
 		
 		generatedNode[MockComponentPrototype1.type] = mockcomponent
-		console.log(generatedNode)
 		expect( generatedNode[ MockComponentPrototype1.type ] ).to.equal( mockcomponent )
 	}) 
 
 	describe('## cache testing',function(){
-		var nodepool = NodepoolFactory().withNodePrototype(MockNodePrototype).create()
+		var nodepool;
+
+		beforeEach('',function(){
+			MockComponentPrototype1 = ComponentFactory()
+									.withName('mockcomponent1')
+									.props({foo: {bar :1}})		
+			mockcomponent = MockComponentPrototype1.create()
+			MockNodePrototype = NodeFactory()
+									.withName('mockNode')
+									.withComponentTypes( MockComponentPrototype1.type )
+
+			mocknode = MockNodePrototype.create()								
+			nodepool = NodepoolFactory().withNodePrototype(MockNodePrototype).create()			
+		})		
 
 		it('can cache a node',function(){		
 			var mocknode2 = NodeFactory()
