@@ -17,17 +17,22 @@ describe('#Component Matching Family',function(){
 	// })
 
 	it('creates a default named family', function(){
-		family = FamilyFactory().create()
+		family = FamilyFactory()
+						.withNodePrototype( NodeFactory() )
+						.create()
 		// family = FamilyPrototype.create()
 		expect(family.type).to.exist
 		expect(family.type.name).to.equal('AnonymousMatchingFamily')
-		expect(family.nodePrototype).to.be.null
+		expect(family.nodePrototype).to.be.ok
 		expect(family.nodePool).to.be.ok
 
 	})	
 
 	it('uses fluent style naming', function(){
-		family = FamilyFactory().withName('miFamilia').create()		
+		family = FamilyFactory()
+					.withName('miFamilia')
+					.withNodePrototype( NodeFactory())
+					.create()		
 		expect(family.type.name).to.equal('miFamilia')		
 	})	
 
@@ -37,7 +42,7 @@ describe('#Component Matching Family',function(){
 
 		family = FamilyFactory().withNodePrototype( MockNodePrototype )
 
-		expect(family.type.nodePrototype).to.equal( MockNodePrototype)		
+		expect(family.nodePrototype).to.equal( MockNodePrototype)		
 
 	})
 
@@ -79,7 +84,7 @@ describe('#Component Matching Family',function(){
 	it('can create a family from a node', function(){
 		var node = MockNodePrototype.create(),
 			family = FamilyFactory().withNodePrototype( MockNodePrototype ).create(),
-			family2 = FamilyFactory().withNodePrototype( node ).create(),
+			family2 = FamilyFactory().withNodePrototype( node.stamp ).create(),
 			keys = family.componentMap.keys,
 			keys2 = family.componentMap.keys
 

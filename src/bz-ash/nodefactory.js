@@ -54,8 +54,10 @@ module.exports = function() {
             })
             .init( function(params){
               // copy the component
+              // console.log(params)
               var instance = params.instance
-                  //types = instance.type.components  //(componentTypeName, componentType)
+              this.stamp = params.stamp //The stamper for this object
+
                 
               this.componentTypes = params.stamp.componentTypes              
             })
@@ -67,3 +69,9 @@ module.exports = function() {
             //   }
             // })
       //}
+
+
+//------
+
+
+

@@ -21,11 +21,11 @@ module.exports = function() {
 				this.entityNodeMap = DictionaryPrototype.create() // (entity, node) map
 				this.nodelist = NodelistPrototype.create()
 				this.componentMap = DictionaryPrototype.create()  // (componentType, typeName)	
-				this.nodePrototype = undefined
+				// this.nodePrototype = undefined
 			  })
 			  .init(function initNodeType(params) {
-			  	this.nodePrototype = config.nodePrototype
-			  	})
+			  	this.nodePrototype = params.stamp.nodePrototype
+			  })
 			  .init(function initComponentMap(params){
 			  	if(this.nodePrototype) {
 				  	this.nodePrototype.componentTypes.forEach(function forEachInitTypes(t) {
@@ -35,17 +35,20 @@ module.exports = function() {
 			  })
 			  .init(function initNodePool() {
 			  	this.nodePool = NodePoolFactory()
-			  						.withNodePrototype(this.type.nodePrototype)
+			  						.withNodePrototype(this.nodePrototype)
 			  						.create({componentMap: this.componentMap})
 			  })
 			  .static({
 			    type: config,
-			    withName: function withName(name) {			
-								config.name = name								
+			    withName: function withName(name) {
+			    				config.name = name			
 								return this
 							},
 				withNodePrototype: function withNodePrototype(nodeProto) {
-								config.nodePrototype = nodeProto
+							if(!nodeProto.hasOwnProperty('create') || typeof nodeProto.create != 'function') {
+								throw Error('Node prototype is not a stampit prototype: ' + nodeProto)
+							}					
+							this.nodePrototype = nodeProto
 								return this
 							}
 			  })
@@ -128,3 +131,13 @@ module.exports = function() {
 															}
 			  })
 	}
+
+
+// ---------- Sandbox
+
+// var factory = module.exports
+// var prototype = factory().withName('testingFamily')
+// var family = prototype()
+
+// console.log(family)
+
