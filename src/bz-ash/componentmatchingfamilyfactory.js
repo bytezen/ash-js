@@ -22,6 +22,18 @@ module.exports = function() {
 				this.nodelist = NodelistPrototype.create()
 				this.componentMap = DictionaryPrototype.create()  // (componentType, typeName)	
 				// this.nodePrototype = undefined
+
+				Object.defineProperty( this, 
+									   "nodes",
+									   { "get" : function(){
+									   				var arr = [], 
+									   					node
+									   				for(node = this.nodelist.head; node; node = node.next){
+									   					arr.push(node)
+									   				}
+
+									   				return arr
+									   			}})				
 			  })
 			  .init(function initNodeType(params) {
 			  	this.nodePrototype = params.stamp.nodePrototype
@@ -37,7 +49,7 @@ module.exports = function() {
 			  	this.nodePool = NodePoolFactory()
 			  						.withNodePrototype(this.nodePrototype)
 			  						.create({componentMap: this.componentMap})
-			  })
+			  })			  
 			  .static({
 			    type: config,
 			    withName: function withName(name) {
@@ -71,6 +83,7 @@ module.exports = function() {
 								if(!this.entityNodeMap.has(e)) {
 									//does this entity have all of the necessary components to be in the family
 									// console.log(this.componentMap)
+
 									var shouldAdd = e.componentMap.size() > 0 && 
 													this.componentMap.keys.every(function (familyCompType) {
 																				return e.componentMap.has(familyCompType)
@@ -125,6 +138,7 @@ module.exports = function() {
 						}, 
 				componentAddedToEntity: function onComponentAddedToEntity(entity, componentType) {
 											this.addIfMatch(entity)
+
 										},
 				componentRemovedFromEntity: function onComponentRemovedFromEntity(entity, componentType) {
 											this.removeIfMatch(entity)
