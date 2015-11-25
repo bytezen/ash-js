@@ -22,7 +22,7 @@ module.exports = function() {
             add : function addComponent(component) {
                     if( !this.componentMap.has(component) ) {
                       this.componentMap.add(component.type, component)
-                      this.componentAdded.dispatch(component)
+                      this.componentAdded.dispatch(this, component)
 
                       return this
                     } else {
@@ -34,7 +34,7 @@ module.exports = function() {
             remove: function removeComponent(component) {            
                     if( this.componentMap.has(component.type) ) {              
                       this.componentMap.remove(component.type)
-                      this.componentRemoved.dispatch(this, component.type)
+                      this.componentRemoved.dispatch(this, component)
                     }
                     return this
             },
