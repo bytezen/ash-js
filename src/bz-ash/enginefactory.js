@@ -83,7 +83,12 @@ module.exports = function() {
 				            });
 				            this.entityList.remove( entity );
 				        },
-
+				        releaseNodeList: function releaseNodeList( nodeObject ) {
+				            if( this.nodeFamilyMap.has( nodeObject ) ) {
+				                this.nodeFamilyMap.get( nodeObject ).cleanUp();
+				            }
+				            this.nodeFamilyMap.remove( nodeObject );
+				        },
 				        getNodeFamily: function getNodeFamily( nodeObject ) {
 				        	return this.nodeFamilyMap.get( nodeObject )
 				        },

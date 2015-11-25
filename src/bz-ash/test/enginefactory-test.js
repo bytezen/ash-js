@@ -136,6 +136,9 @@ describe('#Engine Factory', function() {
 	it('remove All Entities Checks With All Families', function(){
 		//assume 2 entities added to an engine that has 3 nodes registered
 		var callCount = 6
+
+
+		//---- TODO: Refactor to use stampit compose like above
 		var removeEntityCountFn = function removeEntityCalled() { 
 									callCount--
 								}
@@ -156,12 +159,30 @@ describe('#Engine Factory', function() {
 		expect(engine.entities).to.have.length(0)								
 	})
 
+	it('release NodeList Calls CleanUp', function(){
+		var callCount = 0
+		var cleanUpCallCount = function cleanUpCallCount() {
+									callCount++
+								}
+		var mockFamilyPrototype = stampit.compose(FamilyFactory(),
+												stampit.methods({ cleanUp: cleanUpCallCount}))
+
+		engine = EngineFactory().create({familyPrototype: mockFamilyPrototype})
+		//side effect creates a family
+		engine.getNodeList( numberNode )
+
+		engine.releaseNodeList( numberNode )
+		expect(callCount).to.equal(1)
+		expect(engine.nodeFamilyMap.has(numberNode)).to.be.false
+		
+	})
 
 	it('component Added Checks With All Families', function(){
 		//add some nodes to the engine to make some families
 		var testEntities = entities.slice(2,4) //string, string
 		var callCount = 0
 
+		//---- TODO: Refactor to use stampit compose like above
 		var onComponentAddedCallCount = function(entity,component){										
 											callCount++
 										}
@@ -208,10 +229,6 @@ describe('#Engine Factory', function() {
 
 	// })
 
-
-
-
-	it('release NodeList Calls CleanUp')
 
 /*
     test("entitiesGetterReturnsAllTheEntities", function() {
