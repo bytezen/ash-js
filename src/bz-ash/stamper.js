@@ -41,6 +41,10 @@ function createStamperPrototye(stamp_id, stamp_name) {
             stamperName: config.name 
           })
 
+
+//TODO: Add a method to return the prototype of this composed object
+
+
   return stamper;
 }
 
