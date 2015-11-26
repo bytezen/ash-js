@@ -80,6 +80,17 @@ describe('#Nodelist ',function(){
 
 	})	
 
+	it('## can access list as array through list property', function() { 
+		var mockNodes = makeLinkedList(0,nodeArr.length)
+
+		mockNodes.forEach( function(n) { list.add(n) } )
+		var nodeList = list.list
+
+		expect(nodeList).to.have.length(nodeArr.length)
+		expect(nodeList.every(function(n){ return nodeList.indexOf(n) >=0  })).to.be.true
+
+	})	
+
 	it('## can remove head node', function() { 
 
 		var count = 0

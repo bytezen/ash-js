@@ -6,6 +6,18 @@ module.exports = stampit()
 						head: null,
 						tail: null
 					})
+					.init(function initListProperty(){
+							Object.defineProperty( this, 
+						   "list",
+						   { "get" : function(){
+						   				var arr = [], 
+						   					node
+						   				for(node = this.head; node; node = node.next){
+						   					arr.push(node)
+						   				}
+						   				return arr
+						   			}})
+					})
 					.methods({
 						add: function addNode( node ) {
 							if( !this.head ) {
@@ -49,6 +61,7 @@ module.exports = stampit()
 							}
 						},
 					})
+
 
 
 var SignalListChange = stampit()
