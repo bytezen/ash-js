@@ -87,7 +87,7 @@ describe('#Nodelist ',function(){
 		var nodeList = list.list
 
 		expect(nodeList).to.have.length(nodeArr.length)
-		expect(nodeList.every(function(n){ return nodeList.indexOf(n) >=0  })).to.be.true
+		expect(nodeList.every( function(n){ return nodeList.indexOf(n) >=0; })).to.be.true
 
 	})	
 
