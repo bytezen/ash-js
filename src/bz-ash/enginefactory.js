@@ -2,7 +2,7 @@ var stampit = require('stampit'),
 	Signal = require('signals'),
 	Dictionary = require('../bzutil/dictionary'),
 	LinkedList = require('../bzutil/linkedlist')
-	SystemList = require('./systemlistfactory'),
+	SystemListPrototype = require('./systemlistfactory')(),
 	FamilyFactory = require('./componentmatchingfamilyfactory')
 
 
@@ -10,6 +10,7 @@ module.exports = function() {
 	var factory = stampit()
 					.init( function initProps(){
 						this.entityList = LinkedList.create()
+						this.systemList = SystemListPrototype.create()
 						this.nodeFamilyMap = Dictionary.create() //(node,family)
 					})
 					.init( function initGetters(){
@@ -30,13 +31,14 @@ module.exports = function() {
 					})
 					.props({ 
 						entityList: undefined,  	//LinkedList
-						systemsList: undefined,		//SystemsLinkedList
+						systemList: undefined,		//SystemsLinkedList
 						nodeFamilyMap: undefined,		//Dictionary (nodeObject, ComponentMatchingFamily)
 						updating : false,			
 						updateComplete : undefined,
 						familyPrototype: undefined
 					})
 					.methods({
+
 				        addEntity: function (entity) {				        	
 				            this.entityList.add( entity );
 			            	entity.componentAdded.add( this.onComponentAdded, this );
@@ -76,6 +78,7 @@ module.exports = function() {
 				            }
 				            return family.nodelist;
 				        },				        
+
 				        removeEntity: function (entity) {
 				            entity.componentAdded.remove( this.onComponentAdded, this );
 				            this.nodeFamilyMap.forEach( function( nodeObject, family ) {
@@ -83,20 +86,28 @@ module.exports = function() {
 				            });
 				            this.entityList.remove( entity );
 				        },
+
 				        releaseNodeList: function releaseNodeList( nodeObject ) {
 				            if( this.nodeFamilyMap.has( nodeObject ) ) {
 				                this.nodeFamilyMap.get( nodeObject ).cleanUp();
 				            }
 				            this.nodeFamilyMap.remove( nodeObject );
 				        },
+
 				        getNodeFamily: function getNodeFamily( nodeObject ) {
 				        	return this.nodeFamilyMap.get( nodeObject )
 				        },
 
-				        removeAllEntities: function () {
+				        removeAllEntities: function removeAllEntities() {
 				            while( this.entityList.head ) {
 				                this.removeEntity( this.entityList.head );
 				            }
+				        },
+
+		                addSystem : function addSystem ( system, priority ) {
+							            system.priority = priority;
+							            system.addToEngine( this );
+							            this.systemList.add( system );
 				        }						
 					})
 

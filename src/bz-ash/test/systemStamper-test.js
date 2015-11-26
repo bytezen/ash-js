@@ -1,24 +1,71 @@
 var expect = require('chai').expect,
-	SystemFactory = require('../systemStamper')
+	SystemFactory = require('../systemStamper'),
+    EngineFactory = require('../enginefactory')
+
+
+
 
 describe('System Stamper', function() {
-	it('systemsGetterReturnsAllTheSystems')
-	it('addSystemCallsAddToEngine')
-	it('removeSystemCallsRemovedFromEngine')
-	it('engineCallsUpdateOnSystems')
-	it('defaultPriorityIsZero')
-	it('canSetPriorityWhenAddingSystem')
-	it('systemsUpdatedInPriorityOrderIfSameAsAddOrder')
-	it('systemsUpdatedInPriorityOrderIfReverseOfAddOrder')
-	it('systemsUpdatedInPriorityOrderIfPrioritiesAreNegative')
-	it('updatingIsFalseBeforeUpdate')
-	it('updatingIsTrueDuringUpdate')
-	it('updatingIsFalseAfterUpdate')
-	it('completeSignalIsDispatchedAfterUpdate')
-	it('getSystemReturnsTheSystem')
-	it('getSystemReturnsNullIfNoSuchSystem')
-	it('removeAllSystemsDoesWhatItSays')
-	it('removeSystemAndAddItAgainDoesNotCauseInvalidLinkedList')
+    var fnCall = {},
+        addFnCall = function() {
+            fnCall['add']++    
+        },
+        removeFnCall = function() {
+            fnCall['remove']++   
+        },
+        updateFnCall = function() {
+            fnCall['update']++
+        }
+
+    var mockSystemPrototype = SystemFactory()
+                                .methods({
+                                    addToEngine: addFnCall,
+                                    removeFromEngine: removeFnCall,
+                                    update: updateFnCall
+                                })
+
+    engine = EngineFactory().create()
+
+
+    before('',function(){
+        fnCall['add'] = 0
+        fnCall['remove'] = 0
+        fnCall['update'] = 0
+
+    })
+
+	it('systems Getter Returns All The Systems', function(){
+        var sys1 = mockSystemPrototype.create({name: 'mock1'}),
+            sys2 = mockSystemPrototype.create({name: 'mock2'}),
+            sys3 = mockSystemPrototype.create({name: 'mock3'}),
+            engine = EngineFactory().create()
+
+        engine.addSystem(sys1)             
+        engine.addSystem(sys2)             
+        engine.addSystem(sys3)
+
+        expect(engine.systemList.list).to.have.length(3)
+        expect(engine.systemList.list.every(function(x){ 
+                                                return [sys1,sys2,sys3].indexOf(x) >= 0;
+                                            })).to.be.true             
+    })
+
+	it('add System Calls Add To Engine')
+	it('remove System Calls Removed From Engine')
+	it('engine Calls Update On Systems')
+	it('default Priority Is Zero')
+	it('can Set Priority When Adding System')
+	it('systems Updated In Priority Order If Same As Add Order')
+	it('systems Updated In Priority Order If Reverse Of Add Order')
+	it('systems Updated In Priority Order If Priorities Are Negative')
+	it('updating Is False Before Update')
+	it('updating Is True During Update')
+	it('updating Is False After Update')
+	it('complete Signal Is Dispatched After Update')
+	it('get System Returns The System')
+	it('get System Returns Null If No Such System')
+	it('remove All Systems Does What It Says')
+	it('remove System And Add It Again Does Not Cause Invalid Linked List')
 
 /*	
     test("systemsGetterReturnsAllTheSystems", function() {
