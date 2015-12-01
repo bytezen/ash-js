@@ -12,6 +12,7 @@ module.exports = function() {
 						this.entityList = LinkedList.create()
 						this.systemList = SystemListPrototype.create()
 						this.nodeFamilyMap = Dictionary.create() //(node,family)
+						this.updateComplete = new Signal()
 					})
 					.init( function initGetters(){
 						Object.defineProperty( this, 
@@ -105,10 +106,35 @@ module.exports = function() {
 				        },
 
 		                addSystem : function addSystem ( system, priority ) {
-							            system.priority = priority;
+							            system.priority = priority || system.priority;
 							            system.addToEngine( this );
 							            this.systemList.add( system );
-				        }						
+				        },
+		                getSystem : function getSystem ( systemType ) {
+							            return this.systemList.get( systemType );
+				        },
+
+				        removeSystem: function removeSystem( system ) {
+							            this.systemList.remove( system );
+							            system.removeFromEngine( this );
+				        },
+
+				        update: function update( time ) {
+						            this.updating = true;
+						            for( var system = this.systemList.head; system; system = system.next ) {
+						                system.update( time );
+						            }
+						            this.updating = false;
+						            this.updateComplete.dispatch();							        	
+				        },
+				        notifyOnUpdateComplete: function onUpdateCompleteHandler(fn) {
+				                                    this.updateComplete.add(fn)
+				                                },
+
+				        stopUpdateCompleteNotification: function removeOnUpdateCompleteHandler(fn) {
+				                                    this.updateComplete.remove(fn)
+				                                }     
+
 					})
 
 

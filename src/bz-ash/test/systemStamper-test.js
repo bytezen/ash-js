@@ -13,57 +13,221 @@ describe('System Stamper', function() {
         removeFnCall = function() {
             fnCall['remove']++   
         },
-        updateFnCall = function() {
+        updateFnAsyncCall = function(time) {
+            setTimeout( function(){ 
+                fnCall['update']++
+                updateCallOrder.push(this)
+            }, time )
+        },
+        updateFnCall = function(time) {
             fnCall['update']++
-        }
+            expect(engine.updating).to.be.true
+        },
 
-    var mockSystemPrototype = SystemFactory()
+        updateCallOrder = []
+
+    var mockSystemPrototype1 = SystemFactory()
                                 .methods({
                                     addToEngine: addFnCall,
                                     removeFromEngine: removeFnCall,
-                                    update: updateFnCall
-                                })
+                                    update: updateFnAsyncCall
+                                }),
+        mockSystemPrototype2 = SystemFactory()
+                                        .methods({
+                                            addToEngine: addFnCall,
+                                            removeFromEngine: removeFnCall,
+                                            update: updateFnAsyncCall
+                                        }),                                
+        mockSystemPrototype3 = SystemFactory()
+                                        .methods({
+                                            addToEngine: addFnCall,
+                                            removeFromEngine: removeFnCall,
+                                            update: updateFnAsyncCall
+                                        })
 
-    engine = EngineFactory().create()
 
+    var sys1,
+        sys2,
+        sys3,
+        engine = EngineFactory().create()
 
-    before('',function(){
+    function resetFnCalls() {
         fnCall['add'] = 0
         fnCall['remove'] = 0
-        fnCall['update'] = 0
+        fnCall['update'] = 0        
+    }  
 
+    function resetUpdateCallOrder() { updateCallOrder = []; }   
+
+    function resetSystems() {
+        sys1 = mockSystemPrototype1.create({name: 'mock1'})
+        sys2 = mockSystemPrototype2.create({name: 'mock2'})
+        sys3 = mockSystemPrototype3.create({name: 'mock3'})        
+    }   
+
+    before('',function(){
+        resetFnCalls()
+        resetSystems()
+        resetUpdateCallOrder()
     })
 
-	it('systems Getter Returns All The Systems', function(){
-        var sys1 = mockSystemPrototype.create({name: 'mock1'}),
-            sys2 = mockSystemPrototype.create({name: 'mock2'}),
-            sys3 = mockSystemPrototype.create({name: 'mock3'}),
-            engine = EngineFactory().create()
+	it('default sytem Priority Is Zero', function(){      
+        expect(sys1.priority).to.be.equal(0)
+    })
+
+    it('add System Calls Add To Engine',function(){
 
         engine.addSystem(sys1)             
-        engine.addSystem(sys2)             
-        engine.addSystem(sys3)
+        engine.addSystem(sys2,1)             
+        engine.addSystem(sys3,2)
+
+        expect(fnCall['add']).to.equal(3)
+    })
+
+    it('default priority is correct after adding to engine', function(){      
+        expect(sys1.priority).to.be.equal(0)
+    })
+
+    it('can Set Priority When Adding System',function(){
+        expect(sys2.priority).to.be.equal(1)
+        expect(sys3.priority).to.be.equal(2)        
+    })
+
+    it('systems Getter Returns All The Systems', function(){
 
         expect(engine.systemList.list).to.have.length(3)
         expect(engine.systemList.list.every(function(x){ 
                                                 return [sys1,sys2,sys3].indexOf(x) >= 0;
-                                            })).to.be.true             
+                                            })).to.be.true 
     })
 
-	it('add System Calls Add To Engine')
-	it('remove System Calls Removed From Engine')
-	it('engine Calls Update On Systems')
-	it('default Priority Is Zero')
-	it('can Set Priority When Adding System')
-	it('systems Updated In Priority Order If Same As Add Order')
-	it('systems Updated In Priority Order If Reverse Of Add Order')
-	it('systems Updated In Priority Order If Priorities Are Negative')
-	it('updating Is False Before Update')
-	it('updating Is True During Update')
-	it('updating Is False After Update')
-	it('complete Signal Is Dispatched After Update')
-	it('get System Returns The System')
-	it('get System Returns Null If No Such System')
+    it('remove System Calls Removed From Engine',function(){
+        engine.removeSystem(sys1)
+        expect(fnCall['remove']).to.equal(1)
+    })
+
+    describe('## system priorities', function() {
+        var sysorder
+
+        beforeEach('',function(){
+            resetUpdateCallOrder()
+            resetFnCalls()
+            resetSystems()            
+
+            sysorder = [sys1,sys2,sys3]            
+        })
+
+        it('systems Updated In Priority Order If Same As Add Order',function(){
+
+            engine = EngineFactory().create()
+            engine.addSystem(sys1,10)
+            engine.addSystem(sys2,20)
+            engine.addSystem(sys3,30)
+
+
+            engine.update(0.1)
+            updateCallOrder.forEach(function(sys,i){ 
+                expect(sys).to.equal(sysorder[i])
+            })
+
+        })
+
+        it('systems Updated In Priority Order If Reverse Add Order',function(){
+
+            engine = EngineFactory().create()
+            engine.addSystem(sys3,30)
+            engine.addSystem(sys2,20)
+            engine.addSystem(sys1,10)              
+            
+            engine.update(0)
+            updateCallOrder.forEach( function(sys,i){ 
+                expect(sys).to.equal(sysorder[i])
+            })
+
+        })
+        
+    	it('systems Updated In Priority Order If Priorities Are Negative', function(){
+
+                engine = EngineFactory().create()
+                engine.addSystem(sys2,-5)
+                engine.addSystem(sys1,-10)              
+                engine.addSystem(sys3,-1)
+                
+                engine.update(0)
+                updateCallOrder.forEach( function(sys,i){ 
+                    expect(sys).to.equal(sysorder[i])
+                })        
+
+        })
+    })
+
+    describe('## Updating', function() {
+        beforeEach('',function(){
+            engine = EngineFactory().create()
+            engine.addSystem(sys1,1)
+            engine.addSystem(sys2,2)
+            engine.addSystem(sys3,3)
+            resetSystems()
+            resetFnCalls()
+        })
+
+        it('engine calls update On systems', function(done){
+            engine.update(5)
+            expect(engine.systemList.list).to.have.length(3)
+            setTimeout( function(){
+                            expect(fnCall['update']).to.equal(3) 
+                            done()
+                        }, 50 )
+        })
+
+    	it('updating is false before update',function(){
+            expect(engine.updating).to.be.false
+        })
+
+    	it('updating is true during update', function(){
+            sys1.update = updateFnCall
+            sys2.update = updateFnCall
+            sys3.update = updateFnCall
+            engine.update(0)
+        })
+
+    	it('updating is false after update', function(done){
+            engine.update(20)
+            expect(engine.updating).to.be.false
+            setTimeout( function(){
+                            expect(engine.updating).to.be.false
+                            done()
+                        }, 100 )
+        })
+
+    	it('dispatches complete signal after update', function(done){
+            var handlerCalled = false
+            var handler = function () {
+                                handlerCalled = true
+                            }
+
+            engine.notifyOnUpdateComplete(handler)
+            engine.update(30)
+            setTimeout( function(){
+                            expect(handlerCalled).to.be.true
+                            engine.stopUpdateCompleteNotification(handler)
+                            done()
+                        }, 200 )            
+
+
+
+        })
+    })
+
+	it('get System Returns The System',function(){
+        expect(engine.getSystem(sys2.type)).to.equal(sys2)
+
+    })
+
+	it('get System Returns Null If No Such System', function(){
+        expect(engine.getSystem(sys1.type)).to.be.null        
+    })
+
 	it('remove All Systems Does What It Says')
 	it('remove System And Add It Again Does Not Cause Invalid Linked List')
 

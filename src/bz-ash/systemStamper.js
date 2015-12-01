@@ -16,7 +16,10 @@ module.exports = function() {
 								update: function update(time) {
 												/* implemented by object */
 											 }
-							})				
+							})	
+							.props({
+								priority: 0
+							})			
 	return stampit.compose(TypeStamper(), SystemStamper)						
 }
 
